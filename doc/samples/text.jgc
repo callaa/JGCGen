@@ -1,0 +1,14 @@
+#boilerplate
+
+$safe_z = 5
+$default_f = 600
+$plunge_f = 100
+
+#set($r3singlepass = true)
+
+#set($font = $Fonts.get("timesr.jhf"))
+$font.setOption("lspace", 2.0)
+
+#g($font.getString("Hello world!"), "-1")
+
+m2

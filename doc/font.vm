@@ -1,0 +1,32 @@
+#define($main)
+<p>JGCGen has simple text rendering capabilities. A set of vector fonts suitable for engraving (Hershey fonts) is bundled with the package.</p>
+
+<p>To get a font, use the \$Fonts object. For example:
+#set($font="font")
+<pre class="code">
+\#set(\$font = \$Fonts.get("timesr.jhf"))
+\#g($${font}.getString("Hello world!"), "-1")
+</pre>
+<p>In this example, we first get the Times Roman Hershey font, then use it to engrave the text "Hello world!" 1 mm deep.</p>
+
+<p>The <code>getString()</code> method is used to render the text into a <code>Path</code>. The path can then be modified using standard path manipulation methods like <code>offset</code> or <code>scale</code>.</p>
+
+<p>The font object can be configured by calling <code>$${font}.setOption("<var>option</var>", "<var>value</var>")</code>. The available options are:</p>
+<table>
+	<thead><tr>
+		<th>Option</th>
+		<th>Description</th>
+		<th>Default</th>
+	</tr></thead>
+	<tbody>
+		<tr>
+			<td>lspace</td>
+			<td>Letter spacing</td>
+			<td>0</td>
+		</tr>
+	</tbody>
+</table>
+
+#end
+#parse("base.tpl")
+

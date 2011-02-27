@@ -1,0 +1,38 @@
+#define($main)
+<p>JGCGen comes bundled with a few generators for commonly used outline paths. To get an outline generator, use the Shapes object. For example: <code>\$Shapes.outline.circle</code>.</p>
+<p>Each outline generator has a few properties that should be set before using. For example: <code>\#g(\$Shapes .outline.circle.radius(10))</code>.</p>
+
+<h2>Rectangle</h2>
+<p>Generate rectangles.</p>
+<dl class="methods">
+<dt>corner("x", "y", "w", "h")</dt>
+<dd>Set the position and size of the rectangle. Symbolic coordinates are accepted.</dd>
+<dt>bounds(Path)</dt>
+<dd>Set the position and size of this rectangle based on another path. This is useful for testing.</dd>
+<dt>round("r")</dt>
+<dd>Set the corner radius for a rounded rectangle. Symbolic coordinates are accepted.</dd>
+</dl>
+
+
+<h2>Circle</h2>
+<p>Generate a circle.</p>
+<dl class="methods">
+<dt>origin("coords")</dt>
+<dd>Set the center of the circle. If not set, the circle will be generated at (0,0). Symbolic coordinates are accepted.</dd>
+<dt>radius("radius")</dt>
+<dd>Set the circle radius. Symbolic coordinates are accepted.</dd>
+</dl>
+
+<h2>Polygon</h2>
+<p>Generate a polygon with arbitrary number of sides.</p>
+<dl class="methods">
+<dt>sides(int)</dt>
+<dd>The number of sides in the polygon (must be at least 3)</dd>
+<dt>rotate(double)</dt>
+<dd>How much the polygon should be rotated (in degrees.)</dd>
+<dt>radius(double)</dt>
+<dd>The polygon radius</dd>
+</dl>
+
+#end
+#parse("base.tpl")

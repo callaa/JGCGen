@@ -1,0 +1,24 @@
+(JGCGen demonstration)
+#boilerplate
+
+$safe_z = 5
+$default_f = 600
+$plunge_f = 150
+$passdepth = 3
+
+#<_engrave> = -1.5 (engraving depth)
+#<_cut>	= -6	(cut-out depth)
+
+(Chamfer)
+#g($Shapes.outline.rectangle.corners("0","0","60","25").round("-5"), "#<_engrave>")
+
+(Lettering)
+#set($font = $Fonts.get("futural.jhf"))
+$font.setOption("lspace", 3)
+#g($font.getString("JGCGen").center("xy").scale("0.5").offset("x30 y-12.5"), "#<_engrave>")
+
+(Cut out)
+#g($Shapes.outline.rectangle.corners("-1.5","1.5","63","28").round("-5"), "#<_cut>")
+
+m2
+

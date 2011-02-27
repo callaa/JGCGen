@@ -1,0 +1,26 @@
+#boilerplate
+
+#<_safe> = 10
+
+(Cut a square)
+(Parameters:)
+	(1: X coordinate)
+	(2: Y coordinate)
+#o("sub", "cut_square")
+	#3 = -0.5
+	g00 x[#1-10] y[#2+10] z#<_safe>
+	#o("repeat", "10")
+		g01 z#3 f100
+			f600
+			x[#1+10]
+			y[#2-10]
+			x[#1-10]
+			y[#2+10]
+		#3 = [#3 - 0.5]
+	#end
+	g00 z#<_safe>
+#end
+
+#ocall("cut_square", "0", "0")
+
+m2

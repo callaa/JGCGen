@@ -1,0 +1,13 @@
+#boilerplate
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+$passdepth = 3
+
+#set($r3singlepass = true)
+#g($Shapes.outline.rectangle.corners("-10", "10", "20", "20"), "-1") 
+#g($Shapes.outline.circle.origin("x0y0").radius("10"), "-1")
+#g($Shapes.outline.polygon.origin("x0y0").radius(10).sides(5), "-1")
+
+m2

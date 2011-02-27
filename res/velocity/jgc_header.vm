@@ -1,0 +1,11 @@
+(JGCGen boilerplate header)
+g17 g40 g49 (XY plane, cancel cutter radius comp., cancel tool offset)
+g54 g80 (coordinate system 1, cancel canned motion, absolute distances)
+g90 g94 (feed rate in units per minute)
+#if($distmode=="mm")
+g21 (distances in mm)
+#else
+g20 (distances in inches)
+#end
+## Default code generator
+#set($router = $Routers.get("3axis"))

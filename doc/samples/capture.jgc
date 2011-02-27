@@ -1,0 +1,19 @@
+#boilerplate
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+$passdepth = 2.5
+
+#capture($mypath)
+g00 x-10 y10
+g01 x10
+	x5 y0
+	x10 y-10
+	x-10
+	x-5 y0
+	x-10 y10
+#end
+#g($mypath, "-5")
+
+m2

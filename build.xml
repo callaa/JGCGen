@@ -1,0 +1,42 @@
+<project name="jgcgen" default="compile" basedir=".">
+
+	<description>Java G-code generator</description>
+	
+	<property name="name" value="jgcgen" />
+	
+	<property name="build" location="build"/>
+	<property name="src" location="src"/>
+
+	<property name="jarfile" value="${name}.jar"/>		
+	
+	<target name="init" depends="clean">
+		<mkdir dir="${build}"/>
+
+		<copy todir="${build}">
+			<fileset dir="res">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="compile" depends="init">
+		<javac srcdir="${src}" destdir="${build}" debug="on" debuglevel="lines,vars,source" excludes="org/luolamies/jgcgen/test/**">
+			<classpath>
+				<fileset dir="jars">
+					<include name="**/*.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+		<jar jarfile="${jarfile}" basedir="${build}">
+			<zipgroupfileset dir="jars" includes="*.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="org.luolamies.jgcgen.JGCGenerator" />
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${build}"/>
+	</target>
+	
+</project>

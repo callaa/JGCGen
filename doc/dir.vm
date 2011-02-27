@@ -1,0 +1,85 @@
+#define($main)
+<p>In addition to the built-in directives, the following custom directives are provided.</p>
+
+<h2>\#o("sub", "<var>name</var>")</h2>
+<p>Define a subroutine. The subroutine can later be called with <code>\#ocall("<i>name</i>")</code>.</p>
+
+<h2>\#ocall("<var>name</var>", <i>[parameters]</i>)</h2>
+<p>Call the named subroutine. For example, <code>\#ocall("mysub", "10", "20")</code> might expand to <code>o100 call [10] [20]</code></p>
+
+<h2>\#o("until|while|repeat|if", "<var>condition</var>")</h2>
+<p>A looping or conditional block.
+
+<h2>\#obreak</h2>
+<p>Expands to <code>o<i>n</i> break</code></p>
+
+<h2>\#ocontinue</h2>
+<p>Expands to <code>o<i>...</i> continue</code></p>
+
+<h2>\#oelse</h2>
+<p>Expands to <code>o<i>...</i> else</code></p>
+
+<h2>\#oreturn</h2>
+<p>Expands to <code>o<i>...</i> return</code></p>
+
+<h2>\#split(<var>index</var>)</h2>
+<p>Split parts of a single source file to multiple output files. When used (together with the <code>-s</code> argument), multiple files are generated (suffixed with <code>_<i>index</i></code>). Each file gets only those split blocks witht the same index number. Blocks with index 0 are omitted altogether when split output is used.</p>
+<p>Example:</p>
+<pre class="code">
+(This is included in all output files)
+
+\#split(0)
+(This is omitted when splitting is enabled)
+\#end
+
+\#split(1)
+(This part goes to output_1.ngc)
+\#end
+
+\#split(2)
+(This part goes to output_2.ngc)
+\#end
+
+\#split(100)
+(This part goes to output_100.ngc.)
+(Files generated are: output_1.ngc, output_2.ngc and output_100.ngc)
+\#end
+</pre>
+
+#set($var="")
+<h2>\#capture(\$var)</h2>
+<p>Capture the content of this block as a path. Example:</p>
+<pre class="code">
+(Cut a square 5mm deep)
+\#capture(\$var)
+g00 x0 y0
+g01 x10
+g01 y10
+g01 x0
+g01 y0
+\#end
+\#g(\$var, "-5")
+</pre>
+
+#set($router="")
+#set($path="")
+<h2>\#g([\$router], \$path, ["offset"])</h2>
+<p>Generate G-code for a path. If no router implementation is given, the default (<code>\$router</code>) will be used.
+<p>If an offset is defined, it is added to the Z axis of the path. The offset is required for 2D paths. For 3D paths, no offset is typically required.
+The generator may produce looping code to make the cut in multiple passes.</p>
+
+<h2 id="boilerplate">\#boilerplate</h2>
+<p>A macro that sets some default options:
+<ul>
+<li>Select XY plane (G17)
+<li>Cancel cutter radius compensation (G40)
+<li>Cancel tool offset (G49)
+<li>Select coordinate system 1 (G54)
+<li>Cancel motion mode (G80)
+<li>Absolute distance mode (G90)
+<li>Units per minute feed rate (G94)
+<li>Distance mode to either mm (G21, the default) or inches (G20).
+<li>Set <code>\$router</code> to <code>\$Routers.get("3axis")</code>
+</ul>
+#end
+#parse("base.tpl")

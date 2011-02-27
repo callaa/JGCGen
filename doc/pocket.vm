@@ -1,0 +1,13 @@
+#define($main)
+<p>In addition to outlines, JGCGen also has generators for pocket shapes.</p>
+
+<h2>Spiral</h2>
+<p>This generates a circular pocket with a path that spirals outwards from the center.</p>
+<dl class="methods">
+<dt>radius(double)</dt><dd>Set the pocket radius</dd>
+<dt>tool(double)</dt><dd>Set the tool diameter</dd>
+<dt>origin("coords")</dt><dd>Set the pocket center coordinates. Only numeric coordinates are supported. Default is X0 Y0.</dd>
+</dl>
+
+#end
+#parse("base.tpl")

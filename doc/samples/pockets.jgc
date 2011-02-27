@@ -1,0 +1,11 @@
+#boilerplate
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+$passdepth = 3
+
+(Cut a 5mm wide and 3mm deep circular pocket using a 3mm endmill)
+#g($Shapes.pocket.spiral.radius(15.0).tool(3.0), "-5")
+
+m2

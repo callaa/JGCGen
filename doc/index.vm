@@ -1,0 +1,40 @@
+#define($main)
+<p>JGCGen is a preprocessor and code generator for NC files used to
+control CNC milling machines. It is built around <a href="http://velocity.apache.org/">Apache Velocity</a> templating engine.  In addition to general templating features, JGCGen provides custom directives that simplify hand writing G-code as well as various toolpath generators.</p>
+
+<h2>Templating</h2>
+<p>At the core of JGCGen is the Velocity templating engine. This means you can use looping constructs (<code>\#foreach</code>), macros, variables, include content from other files, etc. Refer to the user's guide on Velocity's homepage for more details.</p>
+<p>As JGCGen is essentially a template processor, it is very versatile. Even this documentation is generated (ab)using JGCGen!</p>
+
+<h2>G-code directives</h2>
+<p>Of course, JGCGen does much more than just wrap Velocity. Custom directives are provided to simplify creation of subroutines and loops (O blocks).
+For example, consider the following g-code snippet:</p>
+<pre class="code">o100 sub
+o1001 repeat [#1]
+(g-code goes here)
+o1001 endrepeat
+o100 endsub
+
+o100 call [param1] [param2]
+</pre>
+<p>You have to use unique numbers for the O word and remember to match them with correct block ends, but JGCGen will remember them for you:</p>
+<pre class="code">\#o("sub", "mysub")
+\#o("repeat", "#1")
+(g-code goes here)
+\#end
+\#end
+
+\#ocall("mysub", "param1" ,"param2")
+</pre>
+
+<h2>Toolpath generation</h2>
+<p>JGCGen has various classes for generating tool paths. The central class is <code>Path</code>, which contains a somewhat abstract path which can be converted to G-code.</p>
+<p>The conversion is done by Router classes. Currently, only a path router intended for 3 axis mills is implemented.</p>
+<p>Example:</p>
+#set($r3="r3")
+<pre class="code">\#g(\$Shapes.outline.rectangle.corners("10","10", "#1", "#2").round("3"), "-5" )
+</pre>
+<p>The above snippet generates a tool path for cutting a rounded rectangle shape 5 mm deep, with the top left corner at (10,10) and bottom right corner at (10+#1, 10+#2).</p>
+
+#end
+#parse("base.tpl")

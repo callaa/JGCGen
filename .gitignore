@@ -1,0 +1,6 @@
+# Build directories
+/bin/
+/build/
+/doc/html/
+
+*.jar

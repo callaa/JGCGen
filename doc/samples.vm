@@ -1,0 +1,28 @@
+#macro(sample, $name, $desc)
+	<tr>
+		<td><a href="../samples/${name}.jgc">${name}.jgc</td>
+		<td><a href="../samples/${name}.ngc">${name}.ngc</td>
+		<td>$desc</td>
+	</tr>
+#end
+
+#define($main)
+
+<table>
+	<thead><tr>
+		<th>Source</th>
+		<th>Output</th>
+		<th>Description</th>
+	</tr></thead>
+	<tbody>
+#sample("demo", "A simple demonstration script")
+#sample("sub", "Demonstrates subroutines and flow control")
+#sample("outlines", "Demonstrates outline path generators")
+#sample("pockets", "Demonstrates pocket path generators")
+#sample("capture", "How to create custom paths")
+#sample("text", "How to render text")
+	</tbody>
+</table>
+
+#end
+#parse("base.tpl")

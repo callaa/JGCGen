@@ -1,0 +1,4 @@
+## Built-in macros
+#macro(boilerplate)
+#parse("jgc_header.vm")
+#end
