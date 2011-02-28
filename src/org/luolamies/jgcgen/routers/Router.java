@@ -51,6 +51,9 @@ public abstract class Router {
 	 * Push current set of overrides to the stack
 	 */
 	public void push() {
+		if(stack==null)
+			stack = new Stack<Map<String,String>>();
+		
 		if(overrides==null)
 			stack.push(null);
 		else {
@@ -64,7 +67,8 @@ public abstract class Router {
 	 * Restore overrides with the set popped from the stack
 	 */
 	public void pop() {
-		overrides = stack.pop();
+		if(stack!=null)
+			overrides = stack.pop();
 	}
 	
 	/**
