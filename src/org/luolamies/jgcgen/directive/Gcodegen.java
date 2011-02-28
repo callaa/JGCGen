@@ -49,16 +49,21 @@ public class Gcodegen extends Directive {
 		return LINE;
 	}
 
+	private Object getp(InternalContextAdapter ctx, Node node, int i) {
+		if(i>=node.jjtGetNumChildren())
+			return null;
+		return node.jjtGetChild(i).value(ctx);
+	}
 	@Override
 	public boolean render(InternalContextAdapter ctx, Writer out, Node node)
 			throws IOException, ResourceNotFoundException, ParseErrorException,
 			MethodInvocationException {
-		if(node.jjtGetNumChildren()!=2 && node.jjtGetNumChildren()!=3)
-			throw new RenderException("#g takes only two or three parameters!");
+		if(node.jjtGetNumChildren()>3)
+			throw new RenderException("#g takes only 1-3 parameters");
 		
-		Object par1 = node.jjtGetChild(0).value(ctx);
-		Object par2 = node.jjtGetChild(1).value(ctx);
-		Object par3 = node.jjtGetNumChildren()==3 ? node.jjtGetChild(2).value(ctx) : null;
+		Object par1 = getp(ctx, node, 0);
+		Object par2 = getp(ctx, node, 1);
+		Object par3 = getp(ctx, node, 2);
 		
 		Router r;
 		PathGenerator pathg;
