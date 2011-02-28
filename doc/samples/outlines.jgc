@@ -5,9 +5,22 @@ $default_f = 600
 $plunge_f = 100
 $passdepth = 3
 
-#set($r3singlepass = true)
+## Uncomment this to disable multiple passes
+##set($r3singlepass = true)
+
+## 2D outlines
 #g($Shapes.outline.rectangle.corners("-10", "10", "20", "20"), "-1") 
 #g($Shapes.outline.circle.origin("x0y0").radius("10"), "-1")
 #g($Shapes.outline.polygon.origin("x0y0").radius(10).sides(5), "-1")
+
+## 3D outlines
+## Special feed rate for 3D paths
+$router.push()
+$router.setOverride("default_f", "300")
+
+#g($Shapes.outline.helix.origin("x30y0").radius(10).depth(5).pass(2.0))
+
+## Restore original $router settings
+$router.pop()
 
 m2

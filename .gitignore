@@ -3,4 +3,9 @@
 /build/
 /doc/html/
 
+# Output files
 *.jar
+*.ngc
+
+# Temporary files
+*.swp

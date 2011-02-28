@@ -23,6 +23,21 @@
 <dd>Set the circle radius. Symbolic coordinates are accepted.</dd>
 </dl>
 
+<h2>Helix</h2>
+<p>Circular outline/hole by helical milling. This is a 3D path. The 
+advantage of Helix over Circle is that the tool is not plunged straight down
+into the workpiece.</p>
+<dl class="methods">
+	<dt>origin("coords")</dt>
+	<dd>Set the center and top coordinates. If not set, X0Y0Z0 will be used. Only numeric coordinates are accepted.</dd>
+	<dt>radius(double)</dt>
+	<dd>Set the helix radius</dt>
+	<dt>pass(double)</dt>
+	<dd>Set the pass depth</dt>
+	<dt>depth(double)</dt>
+	<dd>Set the depth of the helix. Bottom Z will be origin Z - depth.</dd>
+</dl>
+
 <h2>Polygon</h2>
 <p>Generate a polygon with arbitrary number of sides.</p>
 <dl class="methods">
