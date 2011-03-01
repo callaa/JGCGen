@@ -22,6 +22,9 @@
 <h2>\#oreturn</h2>
 <p>Expands to <code>o<i>...</i> return</code></p>
 
+<h2>\#oreset</h2>
+<p>Reset O word numbering. This is useful when you need to integrate JGCGen generated code with code from another generator. The first parameter should be either "sub" or "main" and the second is the next number to use.</p>
+
 <h2>\#split(<var>index</var>)</h2>
 <p>Split parts of a single source file to multiple output files. When used (together with the <code>-s</code> argument), multiple files are generated (suffixed with <code>_<i>index</i></code>). Each file gets only those split blocks witht the same index number. Blocks with index 0 are omitted altogether when split output is used.</p>
 <p>Example:</p>

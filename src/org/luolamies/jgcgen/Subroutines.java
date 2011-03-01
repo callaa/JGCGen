@@ -79,6 +79,14 @@ public class Subroutines {
 		return current;
 	}
 	
+	static public void resetSub(int next) {
+		nextsub = next;
+	}
+	
+	static public void resetMain(int next) {
+		flows = next;
+	}
+	
 	/**
 	 * Get the next available number for an O flow control block.
 	 * <p>The value returned depends on if we are currently in a subroutine.
