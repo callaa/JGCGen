@@ -1,0 +1,41 @@
+#define($main)
+<p>JGCGen has a simple image to g-code converter. It can be accessed via <code>\$Shapes.surface.image</code>.</p>
+<p>The image converter has the following methods:</p>
+<dl class="methods">
+<dt>file("filename")</dt><dd>The path to the input file.</dd>
+<dt>invert()</dt><dd>Invert the image.</dd>
+<dt>normalize()</dt><dd>Remap the value scale so the darkest pixel becomes back and the lightest white.</dd>
+<dt>flip()</dt><dd>Flip the image upside down</dd>
+<dt>mirror()</dt><dd>Mirror the image</dd>
+<dt>rotate()</dt><dd>Rotate the image 90&deg;</dd>
+<dt>height()</dt><dd>The depth or height of the carving area.</dd>
+<dt>size(width, height)</dt><dd>The size of the carving area. The image will be scaled to fit inside the given limits.</dd>
+<dt>pixelsize(size)</dt><dd>An alternative to the above method. Set the pixel size directly.</dd>
+<dt>stepover(size)</dt><dd>How many units to step over when carving the next line.</dd>
+<dt>tool("tool")</dt><dd>Tool type</dd>
+<dt>strategy("strategy")</dt><dd>Engraving strategy</dd>
+</dl>
+<p>You must set at least the input file name, scale (size or pixel size), height and the tool.</p>
+
+<h3>Tools</h3>
+<p>For best results, you should tell JGCGen what type of tool you are using. The shape of the tool is taken in account when generating the toolpath.</p>
+<p>Tool description syntax is "<code><var>dia</var> <var>type</var></code>", where <i>dia</i> is the diameter of the tool and <i>type</i> is one of the following:</p>
+<ul>
+<li><b>flat</b> (flat endmill)</li>
+<li><b>ball</b> (ballnose endmill)</li>
+</ul>
+<p>E.g. If you're using a 3.1mm ballnose endmill, the tool description string would be "<code>3.1 ball</code>".</p>
+
+<h3>Strategies</h3>
+<p>A strategy is a method of generating the tool path. Currently, only "simple" is supported. A strategy can take parameters, e.g. <code>"simple rows"</code>.
+
+<h4>simple</h4>
+<p>The simple strategy is, as you might guess, very simple. The tool is moved across the image in a scanning pattern. No multiple passes are generated, so you can only do shallow engravings with it. The following parameters are supported:</p>
+<ul>
+<li>rows
+<li>cols
+<li>zigzag (default)
+</ul>
+
+#end
+#parse("base.tpl")

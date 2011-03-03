@@ -1,0 +1,10 @@
+#boilerplate
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+
+(Image carving)
+#g($Shapes.surface.image.file("samples/suzanne.png").size(50,50).height(3).strategy("simple zigzag").tool("3 ball").stepover(0))
+
+m2

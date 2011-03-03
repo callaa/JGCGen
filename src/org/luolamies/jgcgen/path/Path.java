@@ -286,6 +286,74 @@ public class Path implements PathGenerator {
 	}
 
 	/**
+	 * Simplify this path. Note. This works only on numeric 3 axis paths.
+	 * <p>
+	 * Does the following changes:
+	 * <ul>
+	 * <li>Merge linear moves
+	 * </ul>
+	 */
+	public Path reduce() {
+		Path rp = new Path();
+		int i=0;
+		int start=-1;
+		
+		while(i<segments.size()) {
+			Segment s = segments.get(i);
+			if(s.type==SType.LINE) {
+				if(start<0) {
+					// Start a new line to reduce
+					start = i;
+					rp.segments.add(s);
+				} else {
+					if(i>start+1) {
+						// We don't have anything to reduce until at least three points: start - X* - current.
+						// Extrapolate a point based on two previous points and the distance to the current point.
+						// Print current point if not close enough to the extrapolated point.
+						NumericCoordinate p1 = (NumericCoordinate)segments.get(i-2).point;
+						NumericCoordinate p2 = (NumericCoordinate)segments.get(i-1).point;
+						NumericCoordinate p3 = (NumericCoordinate)segments.get(i).point;
+						
+						double dist12 = dist(p1, p2);
+						double dist23 = dist(p2, p3);
+						NumericCoordinate e = new NumericCoordinate(
+							p2.getValue(Axis.X) + (p2.getValue(Axis.X) - p1.getValue(Axis.X)) / dist12 * dist23, 
+							p2.getValue(Axis.Y) + (p2.getValue(Axis.Y) - p1.getValue(Axis.Y)) / dist12 * dist23,
+							p2.getValue(Axis.Z) + (p2.getValue(Axis.Z) - p1.getValue(Axis.Z)) / dist12 * dist23
+							);
+						if(dist(p3, e) > 0.001) {
+							rp.segments.add(segments.get(i-1));
+							start = i-1;
+						}
+					}
+				}
+			} else {
+				// Any other type in between resets the reduction.
+				if(start>=0) {
+					rp.segments.add(segments.get(i-1));
+					start = -1;
+				}
+				// We can treat rapids as line starting points
+				if(s.type==SType.MOVE)
+					start = i;
+				rp.segments.add(s);
+			}
+			++i;
+		}
+		if(start>=0)
+			rp.segments.add(segments.get(i-1));
+		
+		return rp;
+	}
+	
+	static private double dist(NumericCoordinate c1, NumericCoordinate c2) {
+		double x = c2.getValue(Axis.X) - c1.getValue(Axis.X);
+		double y = c2.getValue(Axis.Y) - c1.getValue(Axis.Y);
+		double z = c2.getValue(Axis.Z) - c1.getValue(Axis.Z);
+		return Math.sqrt(x*x + y*y + z*z);
+	}
+	
+	/**
 	 * @return this
 	 */
 	public Path toPath() {

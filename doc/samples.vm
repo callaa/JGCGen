@@ -21,6 +21,7 @@
 #sample("pockets", "Demonstrates pocket path generators")
 #sample("capture", "How to create custom paths")
 #sample("text", "How to render text")
+#sample("image", "Converting height map images to g-code")
 	</tbody>
 </table>
 

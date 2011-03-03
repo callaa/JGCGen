@@ -27,6 +27,7 @@
 #navi("font", "Fonts")
 #navi("outline", "Outlines")
 #navi("pocket", "Pockets")
+#navi("image", "Images")
 #navi("samples", "Samples")
 </ul>
 
