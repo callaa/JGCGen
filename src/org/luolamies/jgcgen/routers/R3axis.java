@@ -35,6 +35,7 @@ import org.luolamies.jgcgen.path.SymbolicCoordinate;
  * (Velocity) variables used:
  * <ul>
  * <li>$safe_z
+ * <li>$near_z
  * <li>$plunge_f
  * <li>$normal_f
  * <li>$passdepth
@@ -57,6 +58,11 @@ public class R3axis extends Router {
 	public void toGcode(Writer out, Path path, String zoffset) throws IOException {		
 		// Safe height for rapids
 		Coordinate safez = Coordinate.parse("z" + var("safe_z"));
+		Coordinate nearz;
+		if(!var("safe_z").equals("near_z"))
+			nearz = Coordinate.parse("z" + var("near_z"));
+		else
+			nearz = null;
 		
 		// If a Z offset is given, we obviously offset the path but
 		// also enable multiple pass looping. Loops are calculated for the offset only!
@@ -149,6 +155,12 @@ public class R3axis extends Router {
 					targ = findNext(segments, i.nextIndex());
 				if(targ!=null) {
 					// Plunge down to target depth
+					// If near_z is not the same as safe_z, rapid there first
+					if(nearz!=null) {
+						out.write("G00 ");
+						out.write(nearz.toGcode());
+						out.write('\n');
+					}
 					out.write("G01");
 					out.write(" F");
 					out.write(var("plunge_f"));
@@ -174,6 +186,10 @@ public class R3axis extends Router {
 				out.write("\n\t");
 				out.write(s.point.undefined(Axis.Z).toGcode());
 				// Plunge down to target depth
+				if(nearz!=null) {
+					out.write("\n\t ");
+					out.write(nearz.toGcode());
+				}
 				out.write("\nG01");
 				out.write(" F");
 				out.write(var("plunge_f"));

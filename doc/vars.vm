@@ -58,6 +58,11 @@
 			<td>#&lt;_zsafe&gt;</td>
 		</tr>
 		<tr>
+			<td>near_z</td>
+			<td>A Z value near the top of the workpiece.</td>
+			<td>1</td>
+		</tr>
+		<tr>
 			<td>default_f</td>
 			<td>The default feed rate used by 3axis.</td>
 			<td>#&lt;_fdef&gt;</td>
@@ -75,6 +80,11 @@
 	</tbody>
 </table>
 
+<p>The variable <code>safe_z</code> is used when a rapid move to a new position is
+is requested in a path. When a rapid move is made, the tool is first moved straight up until safe_z is
+reached, then moved with G00 over the target coordinates, lowered to near_z (still with G00) and finally
+plunged to target depth at <code>plunge_f</code> rate. If <code>near_z</code> is the same as <code>safe_z</code>,
+it is omitted.</p> 
 <p>Note that the default configuration variables used by 3axis are <em>g-code variables</em>. Unless you change them to use numbers only, you must define those variables in g-code if you want to the generated code to work. Example:
 </p>
 <pre class="code">
