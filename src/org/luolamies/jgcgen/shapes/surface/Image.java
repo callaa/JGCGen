@@ -3,6 +3,8 @@ package org.luolamies.jgcgen.shapes.surface;
 import java.io.IOException;
 
 import org.luolamies.jgcgen.RenderException;
+import org.luolamies.jgcgen.path.Axis;
+import org.luolamies.jgcgen.path.Coordinate;
 import org.luolamies.jgcgen.path.NumericCoordinate;
 import org.luolamies.jgcgen.path.Path;
 import org.luolamies.jgcgen.path.PathGenerator;
@@ -28,6 +30,27 @@ public class Image implements PathGenerator {
 			filename = name;
 			imgcache = null;
 		}
+		return this;
+	}
+	
+	/**
+	 * Set the image origin (topleft coordinate)
+	 * @param origin
+	 * @return this
+	 */
+	public Image origin(String origin) {
+		NumericCoordinate nc;
+		try {
+			nc = (NumericCoordinate) Coordinate.parse(origin);
+		} catch(ClassCastException e) {
+			throw new IllegalArgumentException("Only numeric coordinates are supported!");
+		}
+		if(!nc.isDefined(Axis.X) || !nc.isDefined(Axis.Y))
+			throw new IllegalArgumentException("X and Y axes must be defined!");
+		if(!nc.isDefined(Axis.Z))
+			nc.set(Axis.Z, 0.0);
+		topleft = nc;
+		
 		return this;
 	}
 	

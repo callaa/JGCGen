@@ -5,6 +5,8 @@ $default_f = 600
 $plunge_f = 100
 
 (Image carving)
-#g($Shapes.surface.image.file("samples/suzanne.png").size(50,50).height(3).strategy("simple zigzag").tool("3 ball").stepover(0))
+#set($img = $Shapes.surface.image.file("samples/suzanne.png").size(50,50).height(3).tool("3 ball"))
+
+#g($img.origin("x0y0").strategy("simple 0 alt"))
 
 m2
