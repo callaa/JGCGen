@@ -63,6 +63,11 @@
 			<td>1</td>
 		</tr>
 		<tr>
+			<td>rapidnear</td>
+			<td>Do intrapath rapids at near_z instead of safe_z.</td>
+			<td>false</td>
+		</tr>
+		<tr>
 			<td>default_f</td>
 			<td>The default feed rate used by 3axis.</td>
 			<td>#&lt;_fdef&gt;</td>
@@ -84,7 +89,12 @@
 is requested in a path. When a rapid move is made, the tool is first moved straight up until safe_z is
 reached, then moved with G00 over the target coordinates, lowered to near_z (still with G00) and finally
 plunged to target depth at <code>plunge_f</code> rate. If <code>near_z</code> is the same as <code>safe_z</code>,
-it is omitted.</p> 
+it is omitted.</p>
+
+<p>If <code>rapidnear</code> is set to true, rapids inside a path will be made at near_z height
+instead of safe_z. This can speed up the work considerably, especially when doing text carving.
+It is disabled by default for safety.</p>
+ 
 <p>Note that the default configuration variables used by 3axis are <em>g-code variables</em>. Unless you change them to use numbers only, you must define those variables in g-code if you want to the generated code to work. Example:
 </p>
 <pre class="code">

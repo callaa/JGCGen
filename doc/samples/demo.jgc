@@ -13,6 +13,7 @@ $passdepth = 3
 #g($Shapes.outline.rectangle.corners("0","0","60","25").round("-5"), "#<_engrave>")
 
 (Lettering)
+$router.setOverride("rapidnear", "true")
 #set($font = $Fonts.get("futural.jhf"))
 $font.setOption("lspace", 3)
 #g($font.getString("JGCGen").center("xy").scale("0.5").offset("x30 y-12.5"), "#<_engrave>")

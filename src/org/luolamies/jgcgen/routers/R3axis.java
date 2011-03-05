@@ -29,6 +29,7 @@ import org.luolamies.jgcgen.path.Axis;
 import org.luolamies.jgcgen.path.Coordinate;
 import org.luolamies.jgcgen.path.Path;
 import org.luolamies.jgcgen.path.SymbolicCoordinate;
+import org.luolamies.jgcgen.path.Path.SType;
 
 /**
  * Path code generator for 3 axis machines.
@@ -57,12 +58,15 @@ public class R3axis extends Router {
 	@Override
 	public void toGcode(Writer out, Path path, String zoffset) throws IOException {		
 		// Safe height for rapids
-		Coordinate safez = Coordinate.parse("z" + var("safe_z"));
-		Coordinate nearz;
+		final Coordinate safez = Coordinate.parse("z" + var("safe_z"));
+		final Coordinate nearz;
 		if(!var("safe_z").equals("near_z"))
 			nearz = Coordinate.parse("z" + var("near_z"));
 		else
 			nearz = null;
+		
+		// Do intrapath rapids at near_z instead of safe_z?
+		final boolean rapidnear = nearz!=null && Boolean.parseBoolean(var("rapidnear"));
 		
 		// If a Z offset is given, we obviously offset the path but
 		// also enable multiple pass looping. Loops are calculated for the offset only!
@@ -112,7 +116,7 @@ public class R3axis extends Router {
 				out.write('\n');
 			}
 			
-			// Get o numbers for the z loop and if
+			// Get o numbers for the z WHILE and IF
 			loopn = Subroutines.getNextOnumber();
 			String ifn = Subroutines.getNextOnumber();
 			zvar = "#<o" + loopn + '>';
@@ -127,6 +131,7 @@ public class R3axis extends Router {
 		
 		// Convert path segments to G codes
 		Path.Segment prev = null;
+		boolean firstrapid = segments.get(0).type==SType.MOVE;
 		for(ListIterator<Path.Segment> i=segments.listIterator();i.hasNext();) {
 			Path.Segment s = i.next();
 			switch(s.type) {
@@ -139,13 +144,14 @@ public class R3axis extends Router {
 				// and the end point is the same as the starting point.
 				if(!skipfirstrapid) {
 					out.write("G00 ");
-					out.write(safez.toGcode());
+					out.write((rapidnear && !firstrapid ? nearz : safez).toGcode());
 					out.write("\n\t");
 					out.write(s.point.undefined(Axis.Z).toGcode());
 					out.write('\n');
 				} else
 					skipfirstrapid = false;
-			
+				firstrapid = false;
+				
 				Path.Segment targ;
 				// If a Z value is defined for the move, use it.
 				// Otherwise we use the Z value of the next non rapid move.
@@ -182,7 +188,7 @@ public class R3axis extends Router {
 			case POINT:
 				// Move over the target point
 				out.write("G00 ");
-				out.write(safez.toGcode());
+				out.write((rapidnear ? nearz : safez).toGcode());
 				out.write("\n\t");
 				out.write(s.point.undefined(Axis.Z).toGcode());
 				// Plunge down to target depth
@@ -205,7 +211,7 @@ public class R3axis extends Router {
 				// Retract back to safety (if this is not the last entry)
 				if(i.hasNext()) {
 					out.write("G00 ");
-					out.write(safez.toGcode());
+					out.write((rapidnear ? nearz : safez).toGcode());
 					out.write('\n');
 				}
 				break;
