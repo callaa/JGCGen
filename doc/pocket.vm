@@ -1,5 +1,6 @@
 #define($main)
 <p>In addition to outlines, JGCGen also has generators for pocket shapes.</p>
+<p>A note about tool diameter. The diameter is used to calculate the radial passes, but the radius itself is not set off! In general, you might want to set the tool diamater to a value less than the real diameter to take lighter cuts. The final radius of the pocket will still be <i>radius + real tool diamater/2</i>.
 
 <h2>Spiral</h2>
 <p>This generates a circular pocket with a path that spirals outwards from the center.</p>
@@ -7,6 +8,16 @@
 <dt>radius(double)</dt><dd>Set the pocket radius</dd>
 <dt>tool(double)</dt><dd>Set the tool diameter</dd>
 <dt>origin("coords")</dt><dd>Set the pocket center coordinates. Only numeric coordinates are supported. Default is X0 Y0.</dd>
+</dl>
+
+<h2>Polygon</h2>
+<p>This generates a polygonal pocket with a path that spirals outwards from the center.</p>
+<dl class="methods">
+<dt>radius(double)</dt><dd>Set the pocket radius</dd>
+<dt>tool(double)</dt><dd>Set the tool diameter</dd>
+<dt>origin("coords")</dt><dd>Set the pocket center coordinates. Only numeric coordinates are supported. Default is X0 Y0.</dd>
+<dt>sides(sides)</dt><dd>Number of sides in the polygon. Minimum is 3.</dd>
+<dt>rotate(angle)</dt><dd>Rotate the polygon. Angle is in degrees.</dd>
 </dl>
 
 #end

@@ -28,7 +28,7 @@ public class Spiral implements PathGenerator {
 	}
 	
 	/**
-	 * Set the radius of the tool
+	 * Set the diamater of the tool.
 	 * @param radius
 	 * @return this
 	 */
