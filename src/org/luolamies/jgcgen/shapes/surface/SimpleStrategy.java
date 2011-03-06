@@ -3,7 +3,6 @@ package org.luolamies.jgcgen.shapes.surface;
 import org.luolamies.jgcgen.path.NumericCoordinate;
 import org.luolamies.jgcgen.path.Path;
 import org.luolamies.jgcgen.path.Path.SType;
-import org.luolamies.jgcgen.tools.Tool;
 
 /**
  * Simple scanning strategy.
@@ -19,15 +18,18 @@ class SimpleStrategy implements ImageStrategy {
 		NEG,
 		ALT
 	}
+	private final Image image;
 	private final int angle;
 	private final Dir dir;
 	
-	public SimpleStrategy() {
+	public SimpleStrategy(Image image) {
+		this.image = image;
 		angle = 0;
 		dir = Dir.ALT;
 	}
 	
-	public SimpleStrategy(String substrategy) {
+	public SimpleStrategy(Image image, String substrategy) {
+		this.image = image;
 		String[] params = substrategy.split(" ");
 		if(params.length!=2)
 			throw new IllegalArgumentException("SimpleStrategy takes 0 or 2 parameters!");
@@ -46,17 +48,19 @@ class SimpleStrategy implements ImageStrategy {
 		}
 	}
 	
-	public Path toPath(NumericCoordinate origin, ImageData image, Tool tool) {
+	public Path toPath(ImageData img) {
 		Path path = new Path();
 		//path.addSegment(SType.MOVE, origin);
 		
-		final double scale = image.getXYscale();
+		final double scale = img.getXYscale();
 		final int so;
-		if(image.getStepover()==0)
+		if(img.getStepover()==0)
 			so = 1; // Default minimum
 		else
-			so = image.getStepover();
+			so = img.getStepover();
 
+		final NumericCoordinate o = image.getOrigin();
+		
 		if(angle==0) {
 			// Zero angle: Scan row by row
 			if(dir!=Dir.ALT) {
@@ -65,27 +69,27 @@ class SimpleStrategy implements ImageStrategy {
 					x0 = 0;
 					dx = 1;
 				} else {
-					x0 = image.getWidth()-1;
+					x0 = img.getWidth()-1;
 					dx = -1;
 				}
-				for(int y=0;y<image.getHeight();y+=so) {
-					path.addSegment(SType.MOVE, origin.offset(new NumericCoordinate(x0*scale, -y*scale, (double)image.getDepthAt(x0, y, tool))));
-					for(int x=1,xx=x0+dx;x<image.getWidth();++x,xx+=dx) {
-						path.addSegment(SType.LINE, origin.offset(new NumericCoordinate(xx*scale,-y*scale,(double)image.getDepthAt(xx, y, tool))));
+				for(int y=0;y<img.getHeight();y+=so) {
+					path.addSegment(SType.MOVE, o.offset(new NumericCoordinate(x0*scale, -y*scale, (double)img.getDepthAt(x0, y, image.getTool()))));
+					for(int x=1,xx=x0+dx;x<img.getWidth();++x,xx+=dx) {
+						path.addSegment(SType.LINE, o.offset(new NumericCoordinate(xx*scale,-y*scale,(double)img.getDepthAt(xx, y, image.getTool()))));
 					}
 				}
 			} else {
-				path.addSegment(SType.MOVE, origin.offset(new NumericCoordinate(null, null, (double)image.getDepthAt(0, 0, tool))));
-				for(int y=0;y<image.getHeight();y+=so) {
+				path.addSegment(SType.MOVE, o.offset(new NumericCoordinate(null, null, (double)img.getDepthAt(0, 0, image.getTool()))));
+				for(int y=0;y<img.getHeight();y+=so) {
 					int x;
-					for(x=0;x<image.getWidth();++x) {
-						path.addSegment(SType.LINE, origin.offset(new NumericCoordinate(x*scale,-y*scale,(double)image.getDepthAt(x, y, tool))));
+					for(x=0;x<img.getWidth();++x) {
+						path.addSegment(SType.LINE, o.offset(new NumericCoordinate(x*scale,-y*scale,(double)img.getDepthAt(x, y, image.getTool()))));
 					}
 					y+=so; --x;
-					if(y>=image.getHeight())
+					if(y>=img.getHeight())
 						break;
 					for(;x>=0;--x) {
-						path.addSegment(SType.LINE, origin.offset(new NumericCoordinate(x*scale,-y*scale,(double)image.getDepthAt(x, y, tool))));
+						path.addSegment(SType.LINE, o.offset(new NumericCoordinate(x*scale,-y*scale,(double)img.getDepthAt(x, y, image.getTool()))));
 					}
 				}
 			}
@@ -97,27 +101,27 @@ class SimpleStrategy implements ImageStrategy {
 					y0 = 0;
 					dy = 1;
 				} else {
-					y0 = image.getHeight()-1;
+					y0 = img.getHeight()-1;
 					dy = -1;
 				}
-				for(int x=0;x<image.getWidth();x+=so) {
-					path.addSegment(SType.MOVE, origin.offset(new NumericCoordinate(x*scale, -y0*scale, (double)image.getDepthAt(x, y0, tool))));
-					for(int y=1,yy=y0+dy;y<image.getHeight();++y,yy+=dy) {
-						path.addSegment(SType.LINE, origin.offset(new NumericCoordinate(x*scale,-yy*scale,(double)image.getDepthAt(x, yy, tool))));
+				for(int x=0;x<img.getWidth();x+=so) {
+					path.addSegment(SType.MOVE, o.offset(new NumericCoordinate(x*scale, -y0*scale, (double)img.getDepthAt(x, y0, image.getTool()))));
+					for(int y=1,yy=y0+dy;y<img.getHeight();++y,yy+=dy) {
+						path.addSegment(SType.LINE, o.offset(new NumericCoordinate(x*scale,-yy*scale,(double)img.getDepthAt(x, yy, image.getTool()))));
 					}
 				}
 			} else {
-				path.addSegment(SType.MOVE, origin.offset(new NumericCoordinate(null, null, (double)image.getDepthAt(0, 0, tool))));
-				for(int x=0;x<image.getWidth();x+=so) {
+				path.addSegment(SType.MOVE, o.offset(new NumericCoordinate(null, null, (double)img.getDepthAt(0, 0, image.getTool()))));
+				for(int x=0;x<img.getWidth();x+=so) {
 					int y;
-					for(y=0;y<image.getHeight();++y) {
-						path.addSegment(SType.LINE, origin.offset(new NumericCoordinate(x*scale,-y*scale,(double)image.getDepthAt(x, y, tool))));
+					for(y=0;y<img.getHeight();++y) {
+						path.addSegment(SType.LINE, o.offset(new NumericCoordinate(x*scale,-y*scale,(double)img.getDepthAt(x, y, image.getTool()))));
 					}
 					x+=so; --y;
-					if(x>=image.getWidth())
+					if(x>=img.getWidth())
 						break;
 					for(;y>=0;--y) {
-						path.addSegment(SType.LINE, origin.offset(new NumericCoordinate(x*scale,-y*scale,(double)image.getDepthAt(x, y, tool))));
+						path.addSegment(SType.LINE, o.offset(new NumericCoordinate(x*scale,-y*scale,(double)img.getDepthAt(x, y, image.getTool()))));
 					}
 				}
 			}

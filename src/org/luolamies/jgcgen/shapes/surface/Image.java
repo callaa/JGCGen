@@ -22,6 +22,22 @@ public class Image implements PathGenerator {
 	private ImageData imgcache;
 	
 	/**
+	 * Get the configured tool
+	 * @return tool
+	 */
+	protected final Tool getTool() {
+		return tool;
+	}
+	
+	/**
+	 * Get the origin (topleft) point
+	 * @return origin
+	 */
+	protected final NumericCoordinate getOrigin() {
+		return topleft;
+	}
+	
+	/**
 	 * Set the name of the input image
 	 * @param name
 	 * @return
@@ -198,11 +214,11 @@ public class Image implements PathGenerator {
 		// Select carving strategy
 		ImageStrategy is;
 		if("simple".equals(strategy))
-			is = new SimpleStrategy();
+			is = new SimpleStrategy(this);
 		else if(strategy.startsWith("simple "))
-			is = new SimpleStrategy(strategy.substring(7));
+			is = new SimpleStrategy(this, strategy.substring(7));
 		else if("rough".equals(strategy))
-			is = new RoughStrategy();
+			is = new RoughStrategy(this);
 		else
 			throw new RenderException("Unknown strategy: " + strategy);
 
@@ -239,6 +255,6 @@ public class Image implements PathGenerator {
 				imgcache.setStepover(1);
 		}
 		
-		return is.toPath(topleft, imgcache, tool).reduce();
+		return is.toPath(imgcache).reduce();
 	}
 }
