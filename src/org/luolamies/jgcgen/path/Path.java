@@ -136,6 +136,14 @@ public class Path implements PathGenerator {
 	}
 	
 	/**
+	 * Is this an empty path
+	 * @return true if nothing has been added to the path yet
+	 */
+	public boolean isEmpty() {
+		return segments.isEmpty();
+	}
+	
+	/**
 	 * Offset this path by a coordinate
 	 * @param offset
 	 * @return copy of this path with the offset
@@ -314,14 +322,14 @@ public class Path implements PathGenerator {
 						NumericCoordinate p2 = (NumericCoordinate)segments.get(i-1).point;
 						NumericCoordinate p3 = (NumericCoordinate)segments.get(i).point;
 						
-						double dist12 = dist(p1, p2);
-						double dist23 = dist(p2, p3);
+						double dist12 = p1.distance(p2);
+						double dist23 = p2.distance(p3);
 						NumericCoordinate e = new NumericCoordinate(
 							p2.getValue(Axis.X) + (p2.getValue(Axis.X) - p1.getValue(Axis.X)) / dist12 * dist23, 
 							p2.getValue(Axis.Y) + (p2.getValue(Axis.Y) - p1.getValue(Axis.Y)) / dist12 * dist23,
 							p2.getValue(Axis.Z) + (p2.getValue(Axis.Z) - p1.getValue(Axis.Z)) / dist12 * dist23
 							);
-						if(dist(p3, e) > 0.001) {
+						if(p3.distance(e) > 0.001) {
 							rp.segments.add(segments.get(i-1));
 							start = i-1;
 						}
@@ -344,13 +352,6 @@ public class Path implements PathGenerator {
 			rp.segments.add(segments.get(i-1));
 		
 		return rp;
-	}
-	
-	static private double dist(NumericCoordinate c1, NumericCoordinate c2) {
-		double x = c2.getValue(Axis.X) - c1.getValue(Axis.X);
-		double y = c2.getValue(Axis.Y) - c1.getValue(Axis.Y);
-		double z = c2.getValue(Axis.Z) - c1.getValue(Axis.Z);
-		return Math.sqrt(x*x + y*y + z*z);
 	}
 	
 	/**

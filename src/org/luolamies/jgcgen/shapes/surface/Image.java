@@ -219,6 +219,8 @@ public class Image implements PathGenerator {
 			is = new SimpleStrategy(this, strategy.substring(7));
 		else if("rough".equals(strategy))
 			is = new RoughStrategy(this);
+		else if(strategy.startsWith("rough "))
+			is = new RoughStrategy(this, strategy.substring(6));
 		else
 			throw new RenderException("Unknown strategy: " + strategy);
 

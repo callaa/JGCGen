@@ -72,6 +72,19 @@ public final class NumericCoordinate extends Coordinate {
 			axes.put(Axis.X, Double.valueOf(z));
 	}
 	
+	/**
+	 * Get the distance to another coordinate.
+	 * <p>Only X, Y and Z values are used in this calculation.
+	 * @param to
+	 * @return
+	 */
+	public double distance(NumericCoordinate to) {
+		double dx = getValue(Axis.X) - to.getValue(Axis.X);
+		double dy = getValue(Axis.Y) - to.getValue(Axis.Y);
+		double dz = getValue(Axis.Z) - to.getValue(Axis.Z);
+		return Math.sqrt(dx*dx + dy*dy + dz*dz);
+	}
+	
 	public final Double getValue(Axis axis) {
 		return axes.get(axis);
 	}

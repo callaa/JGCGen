@@ -1,0 +1,17 @@
+#boilerplate
+#set($rapidnear = true)
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+
+(Image carving 2)
+#set($img = $Shapes.surface.image.file("samples/ball.png").invert().size(30,30).height(8).tool("3 ball"))
+
+#g($img.strategy("rough").stepover("50%"))
+
+m1
+
+#g($img.strategy("simple 0 alt").stepover("20%"))
+
+m2
