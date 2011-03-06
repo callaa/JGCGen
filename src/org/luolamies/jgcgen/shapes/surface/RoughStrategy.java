@@ -21,20 +21,29 @@ public class RoughStrategy implements ImageStrategy {
 		if(passdepth==0)
 			passdepth = tool.getDiameter() * 0.7;
 		
+		int stepover;
+		if(image.getStepover()==0) {
+			stepover = (int) Math.round((tool.getDiameter() / 2.0) / image.getXYscale());
+			if(stepover==0)
+				stepover = 1;
+		} else
+			stepover = image.getStepover();
+		
 		Path path = new Path();
 		double level = 0;
 		do {
 			level -= passdepth;
 			if(level<-image.getZscale())
 				level = -image.getZscale();
-			doPass(path, level, origin, image, tool);
+			doPass(path, level, origin, image, tool, stepover);
 			
 		} while(level>-image.getZscale());
 		return path;
 	}
 	
-	private void doPass(Path path, double level, NumericCoordinate origin, ImageData image, Tool tool) {
-		for(int y=0;y<image.getHeight();y+=image.getStepover()+1) {
+	private void doPass(Path path, double level, NumericCoordinate origin, ImageData image, Tool tool,int dy) {
+		int y=0;
+		do {
 			ArrayList<Integer> points = sliceLine(image, y, level, tool);
 			double yy = -y * image.getXYscale();
 			for(int i=0;i<points.size();i+=2) {
@@ -53,7 +62,14 @@ public class RoughStrategy implements ImageStrategy {
 								)
 						));
 			}
-		}
+			
+			// Increment y, while making sure the we do height-1
+			// even if we have to do one thinner pass.
+			if(y+1 != image.getHeight() && y+dy>=image.getHeight())
+				y = image.getHeight() - 1;
+			else
+				y += dy;
+		} while(y<image.getHeight());
 	}
 	
 	private ArrayList<Integer> sliceLine(ImageData image, int y, double level, Tool tool) {

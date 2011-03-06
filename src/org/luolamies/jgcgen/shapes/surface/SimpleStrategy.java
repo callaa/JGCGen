@@ -51,7 +51,11 @@ class SimpleStrategy implements ImageStrategy {
 		//path.addSegment(SType.MOVE, origin);
 		
 		final double scale = image.getXYscale();
-		final int so = 1 + image.getStepover();
+		final int so;
+		if(image.getStepover()==0)
+			so = 1; // Default minimum
+		else
+			so = image.getStepover();
 
 		if(angle==0) {
 			// Zero angle: Scan row by row

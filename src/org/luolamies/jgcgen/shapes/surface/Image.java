@@ -15,7 +15,8 @@ public class Image implements PathGenerator {
 	private String filename;
 	private String strategy="simple";
 	private boolean invert, normalize, flip, mirror, rotate;
-	private float xsize=-1, ysize=-1, zscale=1.0f, stepover;
+	private float xsize=-1, ysize=-1, zscale=1.0f;
+	private String stepover="";
 	private Tool tool;
 	
 	private ImageData imgcache;
@@ -143,15 +144,35 @@ public class Image implements PathGenerator {
 	
 	/**
 	 * Set the maximum distance between adjacent rows or columns.
-	 * The stepover size determines how many pixel rows/columns are skipped between lines. If stepover
-	 * is zero, all lines will be routed.
+	 * The stepover size determines how many pixel rows/columns are skipped between lines.
+	 * If zero is given, a stepover value is calculated automatically.
 	 * @param size stepover size in mm/inches
 	 * @return
 	 */
 	public Image stepover(double size) {
 		if(size<0)
 			throw new IllegalArgumentException("Stepover must be greater zero or greater!");
-		this.stepover = (float)size;
+		if(size==0)
+			this.stepover = "";
+		else
+			this.stepover = Double.toString(size);
+		return this;
+	}
+	
+	/**
+	 * Set the maximum distance between adjacent rows or columns.
+	 * The size should either be a number or a percentage. If a percentage is
+	 * used, the stepover size is calculated from the tool diameter.
+	 * <p>If a zero or empty string is given, the stepover will be calculated
+	 * automatically.
+	 * @param size
+	 * @return
+	 */
+	public Image stepover(String size) {
+		if("0".equals(size))
+			stepover = "";
+		else
+			stepover = size;
 		return this;
 	}
 	
@@ -204,7 +225,19 @@ public class Image implements PathGenerator {
 			imgcache.setScale(scale, zscale);
 		}
 		
-		imgcache.setStepover((int)Math.floor(stepover / imgcache.getXYscale()));
+		// Calculate stepover
+		if(stepover.length()==0) {
+			imgcache.setStepover(0);
+		} else {
+			double so;
+			if(stepover.endsWith("%"))
+				so = Double.parseDouble(stepover.substring(0,stepover.length()-1)) / 100.0 * tool.getDiameter();
+			else
+				so = Double.parseDouble(stepover);
+			imgcache.setStepover((int)Math.round(so / imgcache.getXYscale()));
+			if(imgcache.getStepover()==0)
+				imgcache.setStepover(1);
+		}
 		
 		return is.toPath(topleft, imgcache, tool).reduce();
 	}

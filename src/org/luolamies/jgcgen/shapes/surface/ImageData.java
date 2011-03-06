@@ -86,7 +86,9 @@ final class ImageData {
 	}
 
 	/**
-	 * Set the stepover size in pixels
+	 * Set the stepover size in pixels.
+	 * <p>The minimum stepover is 1. If this is zero, the
+	 * strategy should use some suitable default value.
 	 * @param pixels
 	 */
 	public void setStepover(int pixels) {
@@ -94,7 +96,8 @@ final class ImageData {
 	}
 	
 	/**
-	 * Get the number of rows/columns to skip between lines
+	 * Get the number of rows/columns to skip between lines.
+	 * The minimum value is 1. If this is zero, use a default value.
 	 * @return stepover pixels
 	 */
 	public int getStepover() {
