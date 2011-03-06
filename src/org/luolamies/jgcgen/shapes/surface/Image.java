@@ -180,6 +180,8 @@ public class Image implements PathGenerator {
 			is = new SimpleStrategy();
 		else if(strategy.startsWith("simple "))
 			is = new SimpleStrategy(strategy.substring(7));
+		else if("rough".equals(strategy))
+			is = new RoughStrategy();
 		else
 			throw new RenderException("Unknown strategy: " + strategy);
 
