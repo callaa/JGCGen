@@ -1,0 +1,19 @@
+#boilerplate
+#set($rapidnear = true)
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+
+(Demonstrate roughing toolpaths)
+#set($img = $Shapes.surface.image.file("samples/ball.png").invert().size(50,50).height(8).tool("3 ball").stepover("50%"))
+
+#g($img.origin("x0y0").strategy("rough 0 0 pos"))
+#g($img.origin("x0y60").strategy("rough 0 0 neg"))
+#g($img.origin("x0y120").strategy("rough 0 0 alt"))
+
+#g($img.origin("x60y0").strategy("rough 0 90 pos"))
+#g($img.origin("x60y60").strategy("rough 0 90 neg"))
+#g($img.origin("x60y120").strategy("rough 0 90 alt"))
+
+m2

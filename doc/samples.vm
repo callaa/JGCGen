@@ -23,6 +23,8 @@
 #sample("text", "How to render text")
 #sample("image", "Converting height map images to g-code")
 #sample("image2", "Another heightmap demo")
+#sample("img_simple", "Image carving samples with <i>simple</i> strategy")
+#sample("img_rough", "Image carving samples with <i>rough</i> strategy")
 	</tbody>
 </table>
 
