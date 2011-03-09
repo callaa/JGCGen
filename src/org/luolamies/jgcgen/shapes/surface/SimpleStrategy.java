@@ -3,6 +3,7 @@ package org.luolamies.jgcgen.shapes.surface;
 import org.luolamies.jgcgen.path.NumericCoordinate;
 import org.luolamies.jgcgen.path.Path;
 import org.luolamies.jgcgen.path.Path.SType;
+import static org.luolamies.jgcgen.shapes.surface.SurfaceUtils.incr;
 
 /**
  * Simple scanning strategy.
@@ -48,89 +49,97 @@ class SimpleStrategy implements ImageStrategy {
 		}
 	}
 	
-	public Path toPath(ImageData img) {
-		Path path = new Path();
-		//path.addSegment(SType.MOVE, origin);
-		
-		final double scale = img.getXYscale();
-		final int so;
-		if(img.getStepover()==0)
-			so = 1; // Default minimum
-		else
-			so = img.getStepover();
-
-		final NumericCoordinate o = image.getOrigin();
-		
+	/**
+	 * Do a single horizontal or vertical scanline in either positive or negative direction
+	 * @param path path to build
+	 * @param img image source
+	 * @param origin origin coordinate
+	 * @param move should the first path segment be a move instead of a line
+	 * @param pos positive direction?
+	 * @param i scanline position (if angle==0, this is the Y coordinate, otherwise this X)
+	 * @param jmin starting point at scanline
+	 * @param jmax ending point at scanline
+	 * @param dj scan step
+	 */
+	private void scanline(Path path, Surface img, boolean move, boolean pos, double i, double jmin, double jmax, double dj) {
+		double j = jmin;
 		if(angle==0) {
-			// Zero angle: Scan row by row
-			if(dir!=Dir.ALT) {
-				int x0, dx;
-				if(dir==Dir.POS) {
-					x0 = 0;
-					dx = 1;
-				} else {
-					x0 = img.getWidth()-1;
-					dx = -1;
-				}
-				for(int y=0;y<img.getHeight();y+=so) {
-					path.addSegment(SType.MOVE, o.offset(new NumericCoordinate(x0*scale, -y*scale, (double)img.getDepthAt(x0, y, image.getTool()))));
-					for(int x=1,xx=x0+dx;x<img.getWidth();++x,xx+=dx) {
-						path.addSegment(SType.LINE, o.offset(new NumericCoordinate(xx*scale,-y*scale,(double)img.getDepthAt(xx, y, image.getTool()))));
-					}
-				}
-			} else {
-				path.addSegment(SType.MOVE, o.offset(new NumericCoordinate(null, null, (double)img.getDepthAt(0, 0, image.getTool()))));
-				for(int y=0;y<img.getHeight();y+=so) {
-					int x;
-					for(x=0;x<img.getWidth();++x) {
-						path.addSegment(SType.LINE, o.offset(new NumericCoordinate(x*scale,-y*scale,(double)img.getDepthAt(x, y, image.getTool()))));
-					}
-					y+=so; --x;
-					if(y>=img.getHeight())
-						break;
-					for(;x>=0;--x) {
-						path.addSegment(SType.LINE, o.offset(new NumericCoordinate(x*scale,-y*scale,(double)img.getDepthAt(x, y, image.getTool()))));
-					}
-				}
+			if(move) {
+				path.addSegment(SType.MOVE, image.getOrigin().offset(new NumericCoordinate(j, i, img.getDepthAt(j, i, image.getTool()))));
+				j = incr(j, jmax, dj);
 			}
-		} else if(angle==90) {
-			// 90° angle: Scan column by column
-			if(dir!=Dir.ALT) {
-				int y0, dy;
-				if(dir==Dir.NEG) {
-					y0 = 0;
-					dy = 1;
-				} else {
-					y0 = img.getHeight()-1;
-					dy = -1;
-				}
-				for(int x=0;x<img.getWidth();x+=so) {
-					path.addSegment(SType.MOVE, o.offset(new NumericCoordinate(x*scale, -y0*scale, (double)img.getDepthAt(x, y0, image.getTool()))));
-					for(int y=1,yy=y0+dy;y<img.getHeight();++y,yy+=dy) {
-						path.addSegment(SType.LINE, o.offset(new NumericCoordinate(x*scale,-yy*scale,(double)img.getDepthAt(x, yy, image.getTool()))));
-					}
-				}
-			} else {
-				path.addSegment(SType.MOVE, o.offset(new NumericCoordinate(null, null, (double)img.getDepthAt(0, 0, image.getTool()))));
-				for(int x=0;x<img.getWidth();x+=so) {
-					int y;
-					for(y=0;y<img.getHeight();++y) {
-						path.addSegment(SType.LINE, o.offset(new NumericCoordinate(x*scale,-y*scale,(double)img.getDepthAt(x, y, image.getTool()))));
-					}
-					x+=so; --y;
-					if(x>=img.getWidth())
-						break;
-					for(;y>=0;--y) {
-						path.addSegment(SType.LINE, o.offset(new NumericCoordinate(x*scale,-y*scale,(double)img.getDepthAt(x, y, image.getTool()))));
-					}
-				}
+			while(true) {
+				path.addSegment(SType.LINE, image.getOrigin().offset(new NumericCoordinate(j, i, img.getDepthAt(j, i, image.getTool()))));
+				if(j==jmax)
+					break;
+				j = incr(j, jmax, dj);
 			}
 		} else {
-			// Other angles are not so simple
+			if(move) {
+				path.addSegment(SType.MOVE, image.getOrigin().offset(new NumericCoordinate(i, j, img.getDepthAt(i, j, image.getTool()))));
+				j = incr(j, jmax, -dj);
+			}
+			while(true) {
+				path.addSegment(SType.LINE, image.getOrigin().offset(new NumericCoordinate(i, j, img.getDepthAt(i, j, image.getTool()))));
+				if(j==jmax)
+					break;
+				j = incr(j, jmax, -dj);
+			}
+		}
+	}
+	
+	public Path toPath(Surface img) {
+		Path path = new Path();
+
+		double so;
+		if(image.getStepover()==0)
+			so = img.getResolution(); // Default minimum
+		else
+			so = image.getStepover();
+		
+		double jmin=0, dj = img.getResolution(), jmax;
+		if(angle==0)
+			jmax = image.getWidth();
+		else if(angle==90)
+			jmax = image.getHeight();
+		else
 			throw new UnsupportedOperationException("Arbitrary angles are not implemented yet!");
+		
+		if(dir==Dir.NEG && angle!=90 || (dir!=Dir.NEG && angle==90)) {
+			jmin = jmax;
+			jmax = 0;
+			dj = -dj;
+		}
+
+		double i=0;
+		double imax;
+		if(angle==0) {
+			imax = -image.getHeight();
+			so = -so;
+		} else {
+			imax = image.getWidth();
+			jmin = -jmin;
+			jmax = -jmax;
+		}
+		
+		boolean first=true;
+		while(true) {
+			scanline(path, img, first | dir!=Dir.ALT, dir!=Dir.NEG, i, jmin, jmax, dj);
+			first = false;
+			
+			if(i==imax)
+				break;
+			i = incr(i, imax, so);
+			
+			if(dir==Dir.ALT) {
+				scanline(path, img, false, false, i, jmax, jmin, -dj);
+				
+				if(i==imax)
+					break;
+				i = incr(i, imax, so);
+			}
 		}
 		
 		return path;
 	}
-
 }

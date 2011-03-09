@@ -3,5 +3,5 @@ package org.luolamies.jgcgen.shapes.surface;
 import org.luolamies.jgcgen.path.Path;
 
 interface ImageStrategy {
-	Path toPath(ImageData img);
+	Path toPath(Surface img);
 }

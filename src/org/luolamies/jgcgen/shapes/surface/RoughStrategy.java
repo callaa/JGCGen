@@ -3,11 +3,12 @@ package org.luolamies.jgcgen.shapes.surface;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.luolamies.jgcgen.path.Axis;
 import org.luolamies.jgcgen.path.NumericCoordinate;
 import org.luolamies.jgcgen.path.Path;
 import org.luolamies.jgcgen.path.Path.SType;
-import org.luolamies.jgcgen.tools.Tool;
+
+import static org.luolamies.jgcgen.shapes.surface.SurfaceUtils.incr;
+import static org.luolamies.jgcgen.shapes.surface.SurfaceUtils.safeline;
 
 /**
  * A rough path generation strategy. This generates multiple fast passes 
@@ -59,64 +60,56 @@ public class RoughStrategy implements ImageStrategy {
 		}		
 	}
 	
-	public Path toPath(ImageData img) {
-		// Get the pass depth in range [0,255]
-		// This is used to generate waterline masks
-		double passdepth = this.passdepth;
+	public Path toPath(Surface img) {
+		// Get the pass depth. This is used to generate waterline masks
+		double passdepth = -this.passdepth;
 		if(passdepth==0)
-			passdepth = image.getTool().getDiameter() * 0.7;
+			passdepth = -image.getTool().getDiameter() * 0.7;
 		
-		// Get the stepover size.
-		// The default is tool radius.
-		int stepover;
-		if(img.getStepover()==0) {
-			stepover = (int) Math.round((image.getTool().getDiameter() / 2.0) / img.getXYscale());
-			if(stepover==0)
-				stepover = 1;
-		} else
-			stepover = img.getStepover();
+		// Get the stepover distance.
+		final double stepover;
+		if(image.getStepover()==0)
+			stepover = image.getTool().getRadius();
+		else
+			stepover = image.getStepover();
 	
 		// Z passes
 		Path path = new Path();
+		final double minlevel = -img.getMaxZ();
 		double level = 0;
 		do {
-			level -= passdepth;
-			if(level<-img.getZscale())
-				level = -img.getZscale();
-			doPass(path, level, img, stepover);
-			
-		} while(level>-img.getZscale());
+			level = incr(level, minlevel, passdepth);
+			doPass(path, level, img, stepover);			
+		} while(level>minlevel);
+		
 		return path;
 	}
 	
-	private void doPass(Path path, double level, ImageData img, int stepover) {
-		int min=0, max;
-		if(angle==0)
-			max = img.getHeight();
-		else
-			max = img.getWidth();
-
-		if(dir==Dir.NEG) {
-			min = max - 1;
-			max = -1;
+	private void doPass(Path path, double level, Surface img, double stepover) {
+		double imin=0, imax;
+		if(angle==0) {
+			imax = -image.getHeight();
 			stepover = -stepover;
-		}
+		} else
+			imax = image.getWidth();
 		
 		// Scan Y or X rows depending on whether angle is 0 or 90
 		NumericCoordinate last=null;
-		int i=min;
-		do {
+		double i=imin;
+		while(true) {
 			doLine(path, img, i, level, dir!=Dir.NEG, last);
+			if(i==imax)
+				break;
+			i = incr(i, imax, stepover);
 			
-			i = incrLine(stepover, i, max);
-			if(dir==Dir.ALT && i!=max) {
+			if(dir==Dir.ALT && i!=imax) {
 				doLine(path, img, i, level, false,
 						path.isEmpty() ? null :
 							(NumericCoordinate)path.getSegments()
 								.get(path.getSize()-1).point
 								.offset(image.getOrigin(), true, false)
 						);
-				i = incrLine(stepover, i, max);
+				i = incr(i, imax, stepover);
 				
 				if(!path.isEmpty()) {
 					last = (NumericCoordinate) path.getSegments()
@@ -124,134 +117,69 @@ public class RoughStrategy implements ImageStrategy {
 						.offset(image.getOrigin(), true, false);
 				}
 			}
-		} while(i!=max);
-	}
-	
-	/**
-	 * Increment line index by stepover so that we still
-	 * do max-1 (or max) last.
-	 * @param stepover
-	 * @param i
-	 * @param max
-	 * @return
-	 */
-	private int incrLine(int stepover, int i, int max) {
-		if(stepover>0) {
-			if(i+1 != max && i+stepover>=max)
-				i = max - 1;
-			else
-				i += stepover;
-			if(i>max)
-				i=max;
-		} else {
-			if(i-1 != max && i+stepover<max)
-				i = max + 1;
-			else
-				i += stepover;
-			if(i<max)
-				i=max;
 		}
-		return i;
 	}
 	
 	/** Generate the toolpath for a single X or Y line, depending on the angle. */
-	private void doLine(Path path, ImageData img, int i, double level, boolean pos, NumericCoordinate last) {
-		ArrayList<Integer> points = sliceLine(img, i, level, pos, image.getTool());
+	private void doLine(Path path, Surface img, double i, double level, boolean pos, NumericCoordinate last) {
+		// Get the available line segments
+		ArrayList<Double> points = sliceLine(img, i, level, pos);
 		
 		// Check if we have anything to do
 		if(points.isEmpty())
 			return;
 		
-		double ii = i * img.getXYscale();
 		if(angle==0)
-			ii = -ii;
+			i = -i;
 
 		SType firsttype = SType.MOVE;
 		// Check if we can continue straight from the last coordinate without a move
 		if(last!=null) {
-			double p = points.get(0) * (double)img.getXYscale();
+			double jj = points.get(0);
 			NumericCoordinate next;
 			if(angle==0)
-				next = new NumericCoordinate(p, ii, level);
+				next = new NumericCoordinate(jj, -i, level);
 			else
-				next = new NumericCoordinate(ii, -p, level);
-			if(safeline(img, last, next))
+				next = new NumericCoordinate(i, -jj, level);
+			if(safeline(img, image.getTool(), last, next))
 				firsttype = SType.LINE;
 		}
 		
 		for(int j=0;j<points.size();j+=2) {
-			double jj = points.get(j) * (double)img.getXYscale();
+			double jj = points.get(j);
 			path.addSegment(firsttype, image.getOrigin().offset(
 					angle==0 ?
-							new NumericCoordinate(jj, ii, level)
+							new NumericCoordinate(jj, -i, level)
 						:
-							new NumericCoordinate(ii, -jj, level)
+							new NumericCoordinate(i, -jj, level)
 					));
 			firsttype = SType.MOVE;
-			jj = points.get(j+1) * (double)img.getXYscale();
+			jj = points.get(j+1);
 			path.addSegment(SType.LINE, image.getOrigin().offset(
 					angle==0 ?
-							new NumericCoordinate(jj, ii, level)
+							new NumericCoordinate(jj, -i, level)
 						:
-							new NumericCoordinate(ii, -jj, level)
+							new NumericCoordinate(i, -jj, level)
 					));
 		}
-	}
-	
-	/**
-	 * Check if a line can be drawn from <i>start</i> to <i>end</i> without
-	 * hitting the shape we're engraving. 
-	 * @param start
-	 * @param end
-	 * @return true if line from start to end is safe
-	 */
-	private boolean safeline(ImageData img, NumericCoordinate start, NumericCoordinate end) {
-		double x1 = start.getValue(Axis.X);
-		double y1 = start.getValue(Axis.Y);
-		double z1 = start.getValue(Axis.Z);
-		
-		double len = start.distance(end);
-		if(len==0)
-			return true;
-		
-		double dx = (end.getValue(Axis.X)-x1) / len;
-		double dy = (end.getValue(Axis.Y)-y1) / len;
-		double dz = (end.getValue(Axis.Z)-z1) / len;
-		
-		int prevx = -1, prevy=-1;
-		for(double d=0;d<len;d += 0.01) {
-			int x = (int)Math.round((x1 + dx*d) / img.getXYscale());
-			int y = (int)Math.round(-(y1 + dy*d) / img.getXYscale());
-			if(x>=img.getWidth())
-				x = img.getWidth()-1;
-			if(y>=img.getHeight())
-				y = img.getHeight()-1;
-			if(x!=prevx || y!=prevy) {
-				double z = z1 + dz*d;
-				
-				if(img.getDepthAt(x, y, image.getTool()) > z)
-					return false;
-				prevx = x;
-				prevy = y;
-			}
-		}
-		return true;
 	}
 	
 	/** Cut a single line into segments */
-	private ArrayList<Integer> sliceLine(ImageData image, int i, double level, boolean pos, Tool tool) {
-		ArrayList<Integer> points = new ArrayList<Integer>();
+	private ArrayList<Double> sliceLine(Surface img, double i, double level, boolean pos) {
+		ArrayList<Double> points = new ArrayList<Double>();
+		
 		boolean bb = true;
-		int max = (angle==0 ? image.getWidth() : image.getHeight());
-		for(int j=0;j<max;++j) {
+		double max = (angle==0 ? image.getWidth() : image.getHeight());
+		
+		for(double j=0;j<max;j+=img.getResolution()) {
 			boolean b;
 			if(angle==0)
-				b = image.getDepthAt(j, i, tool) > level;
+				b = img.getDepthAt(j, i, image.getTool()) > level;
 			else
-				b = image.getDepthAt(i, j, tool) > level;
+				b = img.getDepthAt(i, -j, image.getTool()) > level;
 			
 			if(b!=bb) {				
-				points.add(j - (b ? 1 : 0));
+				points.add(j - (b ? img.getResolution() : 0));
 				bb = b;
 			}
 		}

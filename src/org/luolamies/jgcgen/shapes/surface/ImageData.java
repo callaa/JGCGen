@@ -9,14 +9,15 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import org.luolamies.jgcgen.tools.Tool;
-
-final class ImageData {
+/**
+ * A heightmap image
+ *
+ */
+final class ImageData extends Surface {
 	private final float[] data;
 	private final int width, height;
 	
-	private float xyscale, zscale;
-	private int stepover;
+	private double xyscale, zscale;
 	
 	ImageData(String filename, boolean normalize, boolean invert, boolean flip, boolean mirror, boolean rotate) throws IOException {
 		BufferedImage img = ImageIO.read(new File(filename));
@@ -80,103 +81,58 @@ final class ImageData {
 				data[i] = -1.0f - data[i];
 	}
 	
-	public void setScale(float xy, float z) {
-		xyscale = xy;
-		zscale = z;
-	}
-
-	/**
-	 * Set the stepover size in pixels.
-	 * <p>The minimum stepover is 1. If this is zero, the
-	 * strategy should use some suitable default value.
-	 * @param pixels
-	 */
-	public void setStepover(int pixels) {
-		this.stepover = pixels;
+	public void setTargetSize(double w, double h, double d) {
+		xyscale = Math.min(w / width, h / height);
+		zscale = d;
 	}
 	
-	/**
-	 * Get the number of rows/columns to skip between lines.
-	 * The minimum value is 1. If this is zero, use a default value.
-	 * @return stepover pixels
-	 */
-	public int getStepover() {
-		return stepover;
-	}
-	
-	/**
-	 * Get the width of the image
-	 * @return width in pixels
-	 */
-	public int getWidth() {
-		return width;
-	}
-	
-	/**
-	 * Get the height of the image
-	 * @return height in pixels
-	 */
-	public int getHeight() {
-		return height;
-	}
-	
-	/**
-	 * Get the XY scale factor
-	 * @return
-	 */
-	public float getXYscale() {
+	public double getResolution() {
 		return xyscale;
 	}
-
-	/**
-	 * Get Z scale factor
-	 * @return
-	 */
-	public float getZscale() {
+	
+	public double getAspectRatio() {
+		return (double)width / height;
+	}
+	
+	public double getMaxZ() {
 		return zscale;
 	}
 	
-	/**
-	 * Get the scaled Z value at the given coordinates. Remember! The top of the image is at 0 and the bottom at -zscale.
-	 * @param x x coordinate in pixels
-	 * @param y y coordinate in pixels
-	 * @return scaled depth
-	 */
-	public float getDepthAt(int x, int y) {
-		if(x<0 || x>= width || y<0 || y>=height)
-			throw new ArrayIndexOutOfBoundsException("Coordinate out of range (" + x + "," + y + ") [" + width + "," + height + "]");
-		return data[y*width + x] * zscale;
+	public double getDepthAt(double x, double y) {
+		// Scale X and Y
+		double sx = x / xyscale - 0.5;
+		double sy = y / xyscale + 0.5;
+		
+		double xd = sx - Math.floor(sx);
+		double yd = sy - Math.floor(sy);
+		int xpix = (int)Math.round(sx);
+		int ypix = -(int)Math.round(sy);
+		
+		/*
+		if(xpix<0 || ypix<0 || xpix>=width || ypix>=height)
+			throw new ArrayIndexOutOfBoundsException("Coordinate out of range (" + x + "," + y + ") = (" + xpix + ", " + ypix + ") [" + width + "," + height + "]");	
+		*/
+		
+		double val = zscale * (
+			valueAt(xpix, ypix) * (xd) * (yd) +
+			valueAt(xpix, ypix+1) * (xd) * (1-yd) +
+			valueAt(xpix+1, ypix) * (1-xd) * (yd) +
+			valueAt(xpix+1, ypix+1) * (1-xd) * (1-yd)
+			)
+			;
+		
+		return val;
 	}
 	
-	/**
-	 * Find the maximum depth (Z scaled value) at the given coordinates
-	 * the tool can be plunged to.
-	 * @param cx center X
-	 * @param cy center Y
-	 * @param tool
-	 * @return scaled max. depth
-	 */
-	public float getDepthAt(int cx, int cy, Tool tool) {
-		if(cx<0 || cx>= width || cy<0 || cy>=height)
-			throw new ArrayIndexOutOfBoundsException("Coordinate out of range (" + cx + "," + cy + ") [" + width + "," + height + "]");
-		
-		int rad = (int)Math.max(1, Math.round(tool.getRadius() * xyscale));
-		int minx = Math.max(0, cx-rad), miny = Math.max(0, cy-rad);
-		int maxx = Math.min(width-1, cx+rad), maxy = Math.min(height-1, cy+rad);
-		
-		float maxz = -zscale;
-		for(int y=miny;y<maxy;++y) {
-			for(int x=minx;x<maxx;++x) {
-				double r = Math.hypot(x-cx, y-cy); 
-				if(r <= tool.getRadius()) {
-					// Maximum allowed depth for the tool at this pixel when centered
-					// at cx, cy and taking in account the tool shape
-					float v = data[y*width + x] * zscale - (float)tool.getProfile(r);
-					if(v>maxz)
-						maxz = v;
-				}
-			}
-		}
-		return maxz;
+	private float valueAt(int x, int y) {
+		if(x<0)
+			x = 0;
+		else if(x>=width)
+			x = width-1;
+		if(y<0)
+			y = 0;
+		else if(y>=height)
+			y = height-1;
+		return data[y*width+x];
 	}
 }

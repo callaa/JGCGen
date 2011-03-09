@@ -11,6 +11,7 @@ import org.luolamies.jgcgen.path.PathGenerator;
 import org.luolamies.jgcgen.tools.Tool;
 
 public class Image implements PathGenerator {
+	// Configuration
 	private NumericCoordinate topleft = new NumericCoordinate(0.0, 0.0, 0.0);
 	private String filename;
 	private String strategy="simple";
@@ -18,6 +19,10 @@ public class Image implements PathGenerator {
 	private float xsize=-1, ysize=-1, zscale=1.0f;
 	private String stepover="";
 	private Tool tool;
+	
+	// Computed values
+	private double width, height;
+	private double dstepover;
 	
 	private ImageData imgcache;
 	
@@ -146,19 +151,6 @@ public class Image implements PathGenerator {
 	}
 	
 	/**
-	 * Set the size of a pixel. This is an alternative to @{link #size(float, float)}.
-	 * @param size pixel size
-	 * @return
-	 */
-	public Image pixelsize(float size) {
-		if(size<=0)
-			throw new IllegalArgumentException("Pixel size must be greater than zero!");
-		this.xsize = -size;
-		this.ysize = -size;
-		return this;
-	}
-	
-	/**
 	 * Set the maximum distance between adjacent rows or columns.
 	 * The stepover size determines how many pixel rows/columns are skipped between lines.
 	 * If zero is given, a stepover value is calculated automatically.
@@ -192,6 +184,13 @@ public class Image implements PathGenerator {
 		return this;
 	}
 	
+	/**
+	 * Select tool
+	 * <p>
+	 * Tool definition format is defined in {@link Tool#get(String)}.
+	 * @param tooldef
+	 * @return
+	 */
 	public Image tool(String tooldef) {
 		this.tool = Tool.get(tooldef);
 		return this;
@@ -207,9 +206,39 @@ public class Image implements PathGenerator {
 		return this;
 	}
 	
+	/**
+	 * Get the width of the image
+	 * @return
+	 */
+	protected final double getWidth() {
+		return width;
+	}
+	
+	/**
+	 * Get the height of the image
+	 * @return
+	 */
+	protected final double getHeight() {
+		return height;
+	}
+	
+	/**
+	 * Get the distance between rows or columns
+	 * @return row/column gap
+	 */
+	protected final double getStepover() {
+		return dstepover;
+	}
+	
 	public Path toPath() {
 		if(tool==null)
 			throw new RenderException("Tool not set!");
+		
+		if(filename==null)
+			throw new RenderException("Input file not set!");
+		
+		if(xsize<0)
+			throw new RenderException("Target size not set!");
 		
 		// Select carving strategy
 		ImageStrategy is;
@@ -232,31 +261,34 @@ public class Image implements PathGenerator {
 			throw new RenderException("Couldn't load image \"" + filename + "\": " + e.getMessage(), e);
 		}
 		
-		// Set scale
-		if(xsize<0) {
-			// Pixel size set manually
-			imgcache.setScale(-xsize, zscale);
+		// Set target size
+		imgcache.setTargetSize(xsize, ysize, zscale);
+		
+		// Get true size
+		double targaspect = xsize / ysize;
+		if(targaspect < imgcache.getAspectRatio()) {
+			// Target rect. is taller than the image
+			width = xsize;
+			height = xsize / imgcache.getAspectRatio();
 		} else {
-			// Calculate pixel size
-			float scale = Math.min((float) xsize / imgcache.getWidth(), (float) ysize / imgcache.getHeight());
-			
-			imgcache.setScale(scale, zscale);
+			// Target rect. is wider than the image
+			width = ysize / imgcache.getAspectRatio();
+			height = ysize;
 		}
 		
-		// Calculate stepover
+		// Calculate the gap between rows or columns.
 		if(stepover.length()==0) {
-			imgcache.setStepover(0);
+			// Zero stepover means the stategy will use some default value
+			dstepover = 0;
 		} else {
-			double so;
+			// Stepover can be expressed in absolute units or as a percentage of tool diamater
 			if(stepover.endsWith("%"))
-				so = Double.parseDouble(stepover.substring(0,stepover.length()-1)) / 100.0 * tool.getDiameter();
+				dstepover = Double.parseDouble(stepover.substring(0,stepover.length()-1)) / 100.0 * tool.getDiameter();
 			else
-				so = Double.parseDouble(stepover);
-			imgcache.setStepover((int)Math.round(so / imgcache.getXYscale()));
-			if(imgcache.getStepover()==0)
-				imgcache.setStepover(1);
+				dstepover = Double.parseDouble(stepover);
 		}
 		
+		// Generate toolpath
 		return is.toPath(imgcache).reduce();
 	}
 }
