@@ -49,10 +49,15 @@ public abstract class Surface {
 	
 	public double getDepthAt(double cx, double cy, Tool tool) {
 		final double rad = tool.getRadius();
-		final double res = getResolution();
+		double res = getResolution() / 2;
 		double minx = cx-rad, miny = cy-rad;
 		double maxx = cx+rad, maxy = cy+rad;
 		double maxz = -getMaxZ();
+		
+		if(2*rad < res) {
+			// Special case: resolution is too small
+			res = rad / 2; 
+		}
 		
 		//System.err.println("Get depth at " + cx + ", " + cy + " with " + tool.getRadius() + " at " + res);
 		for(double y=miny;y<maxy;y+=res) {

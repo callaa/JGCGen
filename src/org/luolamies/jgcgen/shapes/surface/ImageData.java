@@ -82,7 +82,7 @@ final class ImageData extends Surface {
 	}
 	
 	public void setTargetSize(double w, double h, double d) {
-		xyscale = Math.min(w / width, h / height);
+		xyscale = Math.min(w / (width-1), h / (height-1));
 		zscale = d;
 	}
 	
@@ -100,39 +100,38 @@ final class ImageData extends Surface {
 	
 	public double getDepthAt(double x, double y) {
 		// Scale X and Y
-		double sx = x / xyscale - 0.5;
-		double sy = y / xyscale + 0.5;
+		double sx = x / xyscale;
+		double sy = -y / xyscale;
 		
-		double xd = sx - Math.floor(sx);
-		double yd = sy - Math.floor(sy);
-		int xpix = (int)Math.round(sx);
-		int ypix = -(int)Math.round(sy);
+		// Linear interpolation
+		int ix = (int)Math.floor(sx);
+		int iy = (int)Math.floor(sy);
+		double fx = sx-ix;
+		double fy = sy-iy;
+
+		//if(ix<0 || iy<0 || ix>=width || iy>=height)
+		//	throw new ArrayIndexOutOfBoundsException("Coordinate out of range (" + x + "," + y + ") = (" + ix + ", " + iy+ ") [" + width + "," + height + "]");			
+
+		if(ix<0)
+			ix = 0;
+		else if(ix>width-2)
+			ix = width-2;
+		if(iy<0)
+			iy = 0;
+		else if(iy>height-2)
+			iy = height-2;
 		
-		/*
-		if(xpix<0 || ypix<0 || xpix>=width || ypix>=height)
-			throw new ArrayIndexOutOfBoundsException("Coordinate out of range (" + x + "," + y + ") = (" + xpix + ", " + ypix + ") [" + width + "," + height + "]");	
-		*/
+		int yy = width * iy;
 		
-		double val = zscale * (
-			valueAt(xpix, ypix) * (xd) * (yd) +
-			valueAt(xpix, ypix+1) * (xd) * (1-yd) +
-			valueAt(xpix+1, ypix) * (1-xd) * (yd) +
-			valueAt(xpix+1, ypix+1) * (1-xd) * (1-yd)
-			)
-			;
-		
-		return val;
-	}
-	
-	private float valueAt(int x, int y) {
-		if(x<0)
-			x = 0;
-		else if(x>=width)
-			x = width-1;
-		if(y<0)
-			y = 0;
-		else if(y>=height)
-			y = height-1;
-		return data[y*width+x];
+		return zscale * (
+				data[yy + ix] * ((1-fx) * (1-fy)) +
+			    data[yy + ix + 1] * (fx * (1-fy)) +
+			    data[yy + width + ix] * ((1-fx) * fy) +
+			    data[yy + width + ix + 1] * (fx*fy)
+			    )
+		    ;
+
+		// Nearest neighbor interpolation (this is only good for testing really)
+		//return zscale * value[((int)Math.round(sy) * width + (int)Math.round(sx));
 	}
 }

@@ -1,0 +1,12 @@
+#boilerplate
+#set($rapidnear = true)
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+
+(Interpolation when stepover is smaller than image resolution)
+#set($img = $Shapes.surface.image.file("samples/interpolationtest.png").size(50,50).height(8).tool("3 ball").stepover("20%"))
+
+#g($img.strategy("simple 0 pos"))
+m2
