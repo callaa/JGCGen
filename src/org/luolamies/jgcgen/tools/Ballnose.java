@@ -7,11 +7,11 @@ public class Ballnose extends Tool {
 	}
 
 	public double getProfile(double r) {
-		return 0.0;
+		return radius-Math.sin(Math.acos(r/radius))*radius;
 	}
 	
 	@Override
 	public String toString() {
-		return String.format(".3f ball", getDiameter());
+		return String.format("%.3f ball", getDiameter());
 	}
 }

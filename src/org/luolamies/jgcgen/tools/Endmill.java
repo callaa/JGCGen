@@ -11,12 +11,12 @@ public class Endmill extends Tool {
 	}
 
 	public double getProfile(double r) {
-		return radius-Math.sin(Math.acos(r/radius))*radius;
+		return 0.0;
 	}
 	
 	@Override
 	public String toString() {
-		return String.format(".3f flat", getDiameter());
+		return String.format("%.3f flat", getDiameter());
 	}
 
 }
