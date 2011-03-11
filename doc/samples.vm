@@ -25,6 +25,8 @@
 #sample("image2", "Another heightmap demo")
 #sample("img_simple", "Image carving samples with <i>simple</i> strategy")
 #sample("img_rough", "Image carving samples with <i>rough</i> strategy")
+#sample("img_interp", "Low resolution image interpolation test")
+#sample("projection", "Path projection onto image surface")
 	</tbody>
 </table>
 

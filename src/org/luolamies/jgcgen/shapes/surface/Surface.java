@@ -1,5 +1,9 @@
 package org.luolamies.jgcgen.shapes.surface;
 
+import org.luolamies.jgcgen.path.Axis;
+import org.luolamies.jgcgen.path.Coordinate;
+import org.luolamies.jgcgen.path.NumericCoordinate;
+import org.luolamies.jgcgen.path.Path;
 import org.luolamies.jgcgen.tools.Tool;
 
 /**
@@ -74,4 +78,53 @@ public abstract class Surface {
 		}
 		return maxz;
 	}
+	
+	/**
+	 * Project a path onto this surface. The Z value for each point
+	 * in the path will be set off by the Z value corresponding point
+	 * P-offset on this surface.
+	 * @param path
+	 * @param offset
+	 * @return path projected onto this surface
+	 */
+	public Path project(Path path, String offset) {
+		return project(path, offset, null);
+	}
+
+	/**
+	 * Project a path onto this surface taking the tool shape in account.
+	 * No point of the tool will penetrate the surface.
+	 * @param path
+	 * @param offset
+	 * @param tool
+	 * @return path projected onto this surface
+	 */
+	public Path project(Path path, String offset, String tool) {
+		Path pp = new Path();
+		
+		final NumericCoordinate o = (NumericCoordinate)Coordinate.parse(offset);
+		Double ox = o.getValue(Axis.X);
+		if(ox==null)
+			ox = 0.0;
+		Double oy = o.getValue(Axis.Y);
+		if(oy==null)
+			oy = 0.0;
+		final Tool t = tool!=null ? Tool.get(tool) : null;
+		
+		for(Path.Segment s : path.getSegments()) {
+			if(s.point!=null) {
+				NumericCoordinate c = (NumericCoordinate) s.point;
+				double z;
+				if(t!=null)
+					z = getDepthAt(c.getValue(Axis.X) + ox, c.getValue(Axis.Y) + oy, t);
+				else
+					z = getDepthAt(c.getValue(Axis.X) + ox, c.getValue(Axis.Y) + oy);
+				pp.addSegment(s.type, c.offset(new NumericCoordinate(null, null, z), false, true));
+			} else
+				pp.addSegment(s.type, null);
+		}
+		return pp;
+	}
+	
+	
 }

@@ -1,0 +1,26 @@
+#boilerplate
+#set($rapidnear = true)
+#set($r3singlepass = true)
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+
+## Load the surface onto which the text will be projected
+#set($img = $Shapes.surface.image.file("samples/ball.png").size(220,220).height(10))
+
+## The surface
+#set($surf = $img.Surface)
+
+## Show the surface. This is just for illustration
+#g($img.strategy("simple 0 alt").stepover("5").tool("3 ball"))
+
+## Load the font
+#set($font = $Fonts.get("timesr.jhf"))
+$font.setOption("lspace", 2.0)
+#set($text = $font.getString("Hello World!").center("xy").offset("x110y-110"))
+
+## Render the projected text
+#g($surf.project($text, ""), "-2")
+
+m2

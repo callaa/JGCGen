@@ -147,6 +147,7 @@ public class Image implements PathGenerator {
 			throw new IllegalArgumentException("Dimensions must be greater than zero!");
 		this.xsize = x;
 		this.ysize = y;
+		imgcache = null;
 		return this;
 	}
 	
@@ -229,6 +230,41 @@ public class Image implements PathGenerator {
 	protected final double getStepover() {
 		return dstepover;
 	}
+
+	/**
+	 * Get the image surface
+	 * @return image surface
+	 */
+	public Surface getSurface() {
+		if(xsize<0)
+			throw new RenderException("Target size not set!");
+		
+		if(imgcache==null) {
+			// Load image
+			try {
+				imgcache = new ImageData(filename, normalize, invert, flip, mirror, rotate);
+			} catch(IOException e) {
+				throw new RenderException("Couldn't load image \"" + filename + "\": " + e.getMessage(), e);
+			}
+			
+			// Set target size
+			imgcache.setTargetSize(xsize, ysize, zscale);
+			
+			// Get true size
+			double targaspect = xsize / ysize;
+			if(targaspect < imgcache.getAspectRatio()) {
+				// Target rect. is taller than the image
+				width = xsize;
+				height = xsize / imgcache.getAspectRatio();
+			} else {
+				// Target rect. is wider than the image
+				width = ysize / imgcache.getAspectRatio();
+				height = ysize;
+			}
+		}
+		
+		return imgcache;
+	}
 	
 	public Path toPath() {
 		if(tool==null)
@@ -236,9 +272,6 @@ public class Image implements PathGenerator {
 		
 		if(filename==null)
 			throw new RenderException("Input file not set!");
-		
-		if(xsize<0)
-			throw new RenderException("Target size not set!");
 		
 		// Select carving strategy
 		ImageStrategy is;
@@ -253,28 +286,8 @@ public class Image implements PathGenerator {
 		else
 			throw new RenderException("Unknown strategy: " + strategy);
 
-		// Load image
-		try {
-			if(imgcache==null)
-				imgcache = new ImageData(filename, normalize, invert, flip, mirror, rotate);
-		} catch(IOException e) {
-			throw new RenderException("Couldn't load image \"" + filename + "\": " + e.getMessage(), e);
-		}
-		
-		// Set target size
-		imgcache.setTargetSize(xsize, ysize, zscale);
-		
-		// Get true size
-		double targaspect = xsize / ysize;
-		if(targaspect < imgcache.getAspectRatio()) {
-			// Target rect. is taller than the image
-			width = xsize;
-			height = xsize / imgcache.getAspectRatio();
-		} else {
-			// Target rect. is wider than the image
-			width = ysize / imgcache.getAspectRatio();
-			height = ysize;
-		}
+		// Make sure the image is loaded
+		getSurface();
 		
 		// Calculate the gap between rows or columns.
 		if(stepover.length()==0) {

@@ -38,6 +38,9 @@ public abstract class Coordinate {
 	 * @param gcode
 	 */
 	static public Coordinate parse(String gcode) {
+		if(gcode.length()==0)
+			return new NumericCoordinate();
+		
 		EnumMap<Axis, String> coords = new EnumMap<Axis, String>(Axis.class);
 		Axis axis = null;
 		StringBuilder cb = new StringBuilder();
