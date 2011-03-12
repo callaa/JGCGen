@@ -4,16 +4,17 @@
 <dl class="methods">
 <dt>file("filename")</dt><dd>The path to the input file.</dd>
 <dt>invert()</dt><dd>Invert the image.</dd>
-<dt>normalize()</dt><dd>Remap the value scale so the darkest pixel becomes back and the lightest white.</dd>
+<dt>normalize()</dt><dd>Remap the value scale so the darkest pixel becomes black and the lightest white.</dd>
 <dt>flip()</dt><dd>Flip the image upside down</dd>
 <dt>mirror()</dt><dd>Mirror the image</dd>
 <dt>rotate()</dt><dd>Rotate the image 90&deg;</dd>
-<dt>height()</dt><dd>The depth or height of the carving area.</dd>
+<dt>height()</dt><dd>The height of the final carved image.</dd>
+<dt>origin("coordinates")</dt><dd>Set the image origin (topleft corner)</dd>
 <dt>size(width, height)</dt><dd>The size of the carving area. The image will be scaled to fit inside the given limits.</dd>
-<dt>pixelsize(size)</dt><dd>An alternative to the above method. Set the pixel size directly.</dd>
-<dt>stepover(size)</dt><dd>How many units to step over when carving the next line.</dd>
+<dt>stepover(size)</dt><dd>How many units to step over when carving the next line. If not specified, some default value will be used.</dd>
 <dt>tool("tool")</dt><dd>Tool type</dd>
 <dt>strategy("strategy")</dt><dd>Engraving strategy</dd>
+<dt>surface</dt>dd>Get the image surface.</dd>
 </dl>
 <p>You must set at least the input file name, scale (size or pixel size), height and the tool.</p>
 
@@ -30,7 +31,11 @@
 <p>A strategy is a method of generating the tool path. Currently, only "simple" is supported. A strategy can take parameters, e.g. <code>"simple 0 pos"</code>.
 
 <h4>simple</h4>
-<p>The simple strategy is, as you might guess, very simple. The tool is moved across the image in a scanning pattern. No multiple passes are generated, so you can only do shallow engravings with it. The strategy takes two parameters: <code><var>angle</var> <var>direction</var></code>. Angle is the scanning angle (either <b>0</b> or <b>90</b>. Arbitrary angle support may be added in the future). Direction can be <b>pos</b> (move towards positive values), <b>neg</b> (move towards negative values) or <b>alt</b> (alternate).</p>
+<p>The simple strategy is, as you might guess, very simple. The tool is moved across the image in a scanning pattern. No multiple passes are generated, so a roughing pass is required unless your carving area is very shallow. The strategy takes two parameters: <code><var>angle</var> <var>direction</var></code>. Angle is the scanning angle (either <b>0</b> or <b>90</b>. Arbitrary angle support may be added in the future). Direction can be <b>pos</b> (move towards positive values), <b>neg</b> (move towards negative values) or <b>alt</b> (alternate).</p>
+
+<h4>rough</h4>
+<p>The rought strategy is similar to the simple strategy, except it does multiple passes and the Z axis is constant per pass. Use this to quickly remove material before a finishing pass with the <em>simple</em> strategy.</p>
+<p>The rough strategy takes three parameters: <code><var>passdepth</var> <var>angle</var> <var>direction</var></code>.</p>
 
 #end
 #parse("base.tpl")

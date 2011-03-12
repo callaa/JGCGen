@@ -71,6 +71,16 @@ g01 y0
 <p>If an offset is defined, it is added to the Z axis of the path. The offset is required for 2D paths. For 3D paths, no offset is typically required.
 The generator may produce looping code to make the cut in multiple passes.</p>
 
+#set($var="")
+#set($x="")
+<h2 id="expression">\#e([\$var], "expression")</h2>
+<p>Evaluate a mathematical expression. If \$var is specified, the result
+is stored in the named variable. Otherwise it is printed to the output stream.</p>
+<p>Variables can be referenced from the expression. For example:</p>
+<pre><code>\#set(\$x = 2.0)
+\#e("sin(x / 2 * pi)")
+</code></pre>
+
 <h2 id="boilerplate">\#boilerplate</h2>
 <p>A macro that sets some default options:
 <ul>

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with JGCGen.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.luolamies.jgcgen.test.path;
+package org.luolamies.jgcgen.test;
 
 import org.junit.Test;
 import org.luolamies.jgcgen.path.Axis;

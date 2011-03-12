@@ -1,6 +1,7 @@
 The following libraries are needed to compile jgcgen:
  * Velocity engine + dependencies (http://velocity.apache.org/)
  * Commons-cli (http://commons.apache.org/cli/)
+ * JEP (http://sourceforge.net/projects/jep/)
 
-Place commons-cli-1.2.jar and velocity-1.7-dep.jar (or newer) in this directory.
+Place commons-cli-1.2.jar, velocity-1.7-dep.jar and jep-2.3.1.jar (or newer) in this directory.
 

@@ -9,6 +9,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="jars/velocity-1.7-dep.jar"/>
+	<classpathentry kind="lib" path="jars/jep-2.3.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

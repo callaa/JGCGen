@@ -1,4 +1,4 @@
-package org.luolamies.jgcgen.test.path;
+package org.luolamies.jgcgen.test;
 
 import org.junit.Test;
 import org.luolamies.jgcgen.path.Path;
