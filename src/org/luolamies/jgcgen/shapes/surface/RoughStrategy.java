@@ -2,7 +2,9 @@ package org.luolamies.jgcgen.shapes.surface;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
+import org.luolamies.jgcgen.path.Coordinate;
 import org.luolamies.jgcgen.path.NumericCoordinate;
 import org.luolamies.jgcgen.path.Path;
 import org.luolamies.jgcgen.path.Path.SType;
@@ -19,6 +21,26 @@ public class RoughStrategy implements ImageStrategy {
 		POS,
 		NEG,
 		ALT
+	}
+	
+	/** Line segment */
+	private class Seg {
+		
+		Seg(double i, double j0, double j1) {
+			this.i = i;
+			this.j0 = j0;
+			this.j1 = j1;
+		}
+		/** The Y coordinate when angle is 0 and X coordinate when 90 */
+		final double i;
+		/** The start and end coordinates orthogonal to */
+		double j0, j1;
+		
+		private void reverse() {
+			double tmp = j0;
+			j0 = j1;
+			j1 = tmp;
+		}
 	}
 	
 	private final Image image;
@@ -79,13 +101,14 @@ public class RoughStrategy implements ImageStrategy {
 		double level = 0;
 		do {
 			level = incr(level, minlevel, passdepth);
-			doPass(path, level, img, stepover);			
+			if(!doPass(path, level, img, stepover))
+				break;
 		} while(level>minlevel);
 		
 		return path;
 	}
 	
-	private void doPass(Path path, double level, Surface img, double stepover) {
+	private boolean doPass(Path path, double level, Surface img, double stepover) {
 		double imin=0, imax;
 		if(angle==0) {
 			imax = -image.getHeight();
@@ -94,34 +117,94 @@ public class RoughStrategy implements ImageStrategy {
 			imax = image.getWidth();
 		
 		// Scan Y or X rows depending on whether angle is 0 or 90
-		NumericCoordinate last=null;
+		List<Seg> segments = new ArrayList<Seg>();
 		double i=imin;
 		while(true) {
-			doLine(path, img, i, level, dir!=Dir.NEG, last);
+			doLine(segments, img, i, level, dir!=Dir.NEG);
 			if(i==imax)
 				break;
 			i = incr(i, imax, stepover);
-			
-			if(dir==Dir.ALT && i!=imax) {
-				doLine(path, img, i, level, false,
-						path.isEmpty() ? null :
-							(NumericCoordinate)path.getSegments()
-								.get(path.getSize()-1).point
-								.offset(image.getOrigin(), true, false)
-						);
-				i = incr(i, imax, stepover);
-				
-				if(!path.isEmpty()) {
-					last = (NumericCoordinate) path.getSegments()
-						.get(path.getSize()-1).point
-						.offset(image.getOrigin(), true, false);
+		}
+		
+		// Nothing to do for this layer?
+		// Then we can stop right here.
+		if(segments.isEmpty())
+			return false;
+		
+		final Coordinate o = image.getOrigin(); 
+		if(dir!=Dir.ALT) {
+			while(!segments.isEmpty()) {
+				Seg seg = segments.remove(0);
+				if(angle==0) {
+					path.addSegment(Path.SType.MOVE, o.offset(new NumericCoordinate(seg.j0, -seg.i, level)));
+					path.addSegment(Path.SType.LINE, o.offset(new NumericCoordinate(seg.j1, -seg.i, level)));
+				} else {
+					path.addSegment(Path.SType.MOVE, o.offset(new NumericCoordinate(seg.i, -seg.j0, level)));
+					path.addSegment(Path.SType.LINE, o.offset(new NumericCoordinate(seg.i, -seg.j1, level)));
 				}
 			}
+		} else {
+			// Alternating directions. This is a bit smarter than that actually.
+			// The segments are sorted to minimize rapids
+			Seg seg = segments.remove(0);
+			boolean movefirst = true;
+			NumericCoordinate last;
+			while(true) {
+				if(angle==0) {
+					path.addSegment(movefirst ? Path.SType.MOVE : Path.SType.LINE, o.offset(new NumericCoordinate(seg.j0, -seg.i, level)));
+					last = new NumericCoordinate(seg.j1, -seg.i, level);
+				} else {
+					path.addSegment(movefirst ? Path.SType.MOVE : Path.SType.LINE, o.offset(new NumericCoordinate(seg.i, -seg.j0, level)));
+					last = new NumericCoordinate(seg.i, -seg.j1, level);
+				}
+				path.addSegment(Path.SType.LINE, o.offset(last));
+				
+				if(segments.isEmpty()) {
+					// If this was the last segment were done.
+					break;
+				} else {
+					// Find the nearest next segment.
+					// Check distance to both ends.
+					double maxd = Double.MAX_VALUE;
+					int maxs = 0;
+					for(int s=0;s<segments.size();++s) {
+						Seg ss = segments.get(s);
+						double d = dist(seg.i-ss.i, seg.j1-ss.j0);
+						double d2 = dist(seg.i-ss.i, seg.j1-ss.j1);
+						if(d2 < d) {
+							ss.reverse();
+							d = d2;
+						}
+						if(d < maxd) {
+							maxd = d;
+							maxs = s;
+						}
+					}
+					// Ok, we got our next segment. See if we can plow
+					// straight into it without lifting the tool
+					Seg next = segments.remove(maxs);
+					
+					NumericCoordinate nc;
+					if(angle==0)
+						nc = new NumericCoordinate(next.j0, -next.i, level);
+					else
+						nc = new NumericCoordinate(next.i, -next.j0, level);
+					
+					movefirst = !safeline(img, image.getTool(), last, nc);
+					
+					seg = next;
+				}
+			};
 		}
+		return true;
+	}
+	
+	static private double dist(double a, double b) {
+		return a*a + b*b;
 	}
 	
 	/** Generate the toolpath for a single X or Y line, depending on the angle. */
-	private void doLine(Path path, Surface img, double i, double level, boolean pos, NumericCoordinate last) {
+	private void doLine(List<Seg> segments, Surface img, double i, double level, boolean pos) {
 		// Get the available line segments
 		ArrayList<Double> points = sliceLine(img, i, level, pos);
 		
@@ -131,36 +214,9 @@ public class RoughStrategy implements ImageStrategy {
 		
 		if(angle==0)
 			i = -i;
-
-		SType firsttype = SType.MOVE;
-		// Check if we can continue straight from the last coordinate without a move
-		if(last!=null) {
-			double jj = points.get(0);
-			NumericCoordinate next;
-			if(angle==0)
-				next = new NumericCoordinate(jj, -i, level);
-			else
-				next = new NumericCoordinate(i, -jj, level);
-			if(safeline(img, image.getTool(), last, next))
-				firsttype = SType.LINE;
-		}
 		
 		for(int j=0;j<points.size();j+=2) {
-			double jj = points.get(j);
-			path.addSegment(firsttype, image.getOrigin().offset(
-					angle==0 ?
-							new NumericCoordinate(jj, -i, level)
-						:
-							new NumericCoordinate(i, -jj, level)
-					));
-			firsttype = SType.MOVE;
-			jj = points.get(j+1);
-			path.addSegment(SType.LINE, image.getOrigin().offset(
-					angle==0 ?
-							new NumericCoordinate(jj, -i, level)
-						:
-							new NumericCoordinate(i, -jj, level)
-					));
+			segments.add(new Seg(i, points.get(j), points.get(j+1)));
 		}
 	}
 	
