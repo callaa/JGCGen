@@ -47,6 +47,7 @@ import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.apache.velocity.runtime.resource.util.StringResourceRepository;
 import org.apache.velocity.runtime.resource.util.StringResourceRepositoryImpl;
 import org.luolamies.jgcgen.directive.Split;
+import org.luolamies.jgcgen.importer.Importer;
 import org.luolamies.jgcgen.routers.Routers;
 import org.luolamies.jgcgen.shapes.Shapes;
 import org.luolamies.jgcgen.text.Fonts;
@@ -253,6 +254,7 @@ public class JGCGenerator {
 		ctx.put("Routers", new Routers(ctx));
 		ctx.put("Shapes", new Shapes());
 		ctx.put("Fonts", new Fonts(new File(".")));
+		ctx.put("Import", Importer.class);
 		
 		// Render the template
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out));

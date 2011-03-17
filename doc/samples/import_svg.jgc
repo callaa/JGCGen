@@ -1,0 +1,22 @@
+#boilerplate
+#set($rapidnear = true)
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+$passdepth = 2
+
+(Demonstrate SVG import)
+#set($svg = $Import.file("samples/svgtest.svg"))
+
+#split(1)
+(Text carving)
+#g($svg.path.id("layer2"), "-0.1")
+#end
+
+#split(2)
+(Cutout)
+#g($svg.path.id("layer1"), "-5")
+#end
+
+m2
