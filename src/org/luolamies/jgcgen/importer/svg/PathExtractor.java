@@ -2,6 +2,7 @@ package org.luolamies.jgcgen.importer.svg;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import org.luolamies.jgcgen.RenderException;
 import org.luolamies.jgcgen.path.Path;
@@ -78,32 +79,48 @@ public class PathExtractor implements PathGenerator {
 		String roottra = svg.root.getAttribute("transform");
 		if(roottra.length()>0)
 			matrix = matrix.multiply(Transform.parse(roottra));
-		
-		for(int i=0;i<svg.root.getChildNodes().getLength();++i) {
-			Node node = svg.root.getChildNodes().item(i);
-			if(node.getNodeType() == Node.ELEMENT_NODE) {
-				Node id = node.getAttributes().getNamedItem("id");				
-				
-				Extr extr = id!=null ? extract(id.getNodeValue()) : null;
-				if(extr!=null && extr.include) {
-					include(path, (Element)node, svg.rootmatrix);
-				}
-			}
-		}
+
+		// Convert selected elements
+		// Convert selected elements
+		// Convert selected elements
+		render(path, svg.root, svg.rootmatrix, false);
 		
 		return path;
 	}
 	
-	private void include(Path path, Element el, Transform matrix) {
-		// First, check if this element has been explicitly excluded
-		if(isExcluded(el.getAttribute("id")))
-			return;
+	private void render(Path path, Element el, Transform matrix, boolean include) {
+		String id = el.getAttribute("id");
 		
+		// Defs node is skipped
+		if("defs".equals(el.getNodeName()) || isExcluded(id))
+			return;
+
 		// Apply transformation matrix if this element has one
 		String transform = el.getAttribute("transform");
 		if(transform.length()>0)
 			matrix = matrix.multiply(Transform.parse(transform));
-				
+		
+		// Check if this node has been explicitly excluded or included
+		Extr extr = id!=null ? extract(id) : null;
+		if(extr!=null) {
+			if(extr.include)
+				include = true;
+			else
+				return;
+		}
+		
+		if(include)
+			include(path, el, matrix);
+	
+		// Render child elements too
+		NodeList nodes = el.getChildNodes();
+		for(int i=0;i<nodes.getLength();++i) {
+			if(nodes.item(i).getNodeType() == Node.ELEMENT_NODE)
+				render(path, (Element)nodes.item(i), matrix, include);
+		}
+	}
+	
+	private void include(Path path, Element el, Transform matrix) {				
 		// Identify element type
 		String type = el.getNodeName();
 		if("g".equals(type)) {
@@ -116,15 +133,7 @@ public class PathExtractor implements PathGenerator {
 			Rect.toPath(path, el, matrix);
 		} else {
 			System.err.println("Warning: Unhandled SVG element " + el.getNodeName());
-			return;
-		}
-		
-		// Recurse into child elements
-		NodeList nodes = el.getChildNodes();
-		for(int i=0;i<nodes.getLength();++i) {
-			if(nodes.item(i).getNodeType() == Node.ELEMENT_NODE)
-				include(path, (Element)nodes.item(i), matrix);
-		}
+		}		
 	}
 
 }
