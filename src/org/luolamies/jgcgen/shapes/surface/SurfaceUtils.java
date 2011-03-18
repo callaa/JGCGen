@@ -36,7 +36,7 @@ class SurfaceUtils {
 		double z1 = start.getValue(Axis.Z);
 		
 		double len = start.distance(end);
-		if(len==0)
+		if(len<0.000001)
 			return true;
 		
 		double dx = (end.getValue(Axis.X)-x1) / len;

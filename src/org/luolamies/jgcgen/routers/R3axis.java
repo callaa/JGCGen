@@ -93,7 +93,17 @@ public class R3axis extends Router {
 		
 		List<Path.Segment> segments = path.getSegments();
 		Coordinate firstpoint = segments.get(0).point;
-		Coordinate lastpoint = segments.get(segments.size()-1).point;
+		Coordinate lastpoint = null;
+		for(int i=segments.size()-1;i>=0;--i) {
+			if(segments.get(i).point!=null) {
+				lastpoint = segments.get(i).point;
+				break;
+			}
+		}
+		if(lastpoint==null) {
+			// A path that consist only of markers?
+			return;
+		}
 		
 		// Preparation for multi-pass cut
 		boolean skipfirstrapid = false;
