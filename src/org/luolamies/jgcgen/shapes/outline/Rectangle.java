@@ -35,6 +35,7 @@ public class Rectangle implements PathGenerator {
 	private String w;
 	private String h;
 	private String round;
+	private String leadin;
 	private boolean concave=false;
 	private boolean ccw;
 	
@@ -124,6 +125,19 @@ public class Rectangle implements PathGenerator {
 	}
 	
 	/**
+	 * Set leadin
+	 * @param leadin
+	 * @return
+	 */
+	public Rectangle leadin(String leadin) {
+		if(leadin.length()==0 || leadin.equals("0"))
+			this.leadin = null;
+		else
+			this.leadin = leadin;
+		return this;
+	}
+	
+	/**
 	 * Set corner radius.
 	 * If radius is negative, the corners will be concave.
 	 * @param radius
@@ -158,7 +172,12 @@ public class Rectangle implements PathGenerator {
 			Coordinate xr = parse("x"+round);
 			Coordinate yr = parse("y"+round);
 			
-			path.addSegment(SType.MOVE, topleft.offset(xr));
+			if(leadin!=null) {
+				path.addSegment(SType.MOVE, topleft.offset(xr).offset(parse("x"+leadin+"y-"+leadin)));
+				path.addSegment(SType.CWARC, topleft.offset(xr).offset(parse("j"+leadin), false, true));
+			} else {
+				path.addSegment(SType.MOVE, topleft.offset(xr));
+			}
 			
 			if(concave) {
 				Coordinate btmleft = topleft.offset(ch);
@@ -244,8 +263,14 @@ public class Rectangle implements PathGenerator {
 		} else {
 			// Sharp cornered rectangle			
 			Coordinate topright = topleft.offset(cw);
-			
-			path.addSegment(SType.MOVE, topleft);
+
+			if(leadin!=null) {
+				path.addSegment(SType.MOVE, topleft.offset(parse("x"+leadin+"y-"+leadin)));
+				path.addSegment(SType.CWARC, topleft.offset(parse("j"+leadin), false, true));
+			} else {
+				path.addSegment(SType.MOVE, topleft);
+			}
+
 			if(ccw) {
 				path.addSegment(SType.LINE, topleft.offset(ch));
 				path.addSegment(SType.LINE, topright.offset(ch));

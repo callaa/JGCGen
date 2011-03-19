@@ -19,6 +19,7 @@
 #sample("sub", "Demonstrates subroutines and flow control")
 #sample("outlines", "Various outlines")
 #sample("outline_circle", "Circular outlines")
+#sample("outline_rect", "Rectangle outlines")
 #sample("pockets", "Various pockets")
 #sample("pocket_rect", "Rectangle pockets")
 #sample("capture", "How to create custom paths")

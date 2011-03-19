@@ -15,8 +15,24 @@ $passdepth = 2
 #g($rect.pos("20", "0").round("3"), "-1") 
 #g($rect.pos("40", "0").round("-3"), "-1") 
 
-#g($rect.pos("0", "25").round("0").ccw(), "-1") 
+#g($rect.pos("60", "0").round("0").leadin("3"), "-1") 
+#g($rect.pos("80", "0").round("3"), "-1") 
+#g($rect.pos("100", "0").round("-3"), "-1") 
+
+#g($rect.pos("60", "-25").round("0").leadin("-3"), "-1") 
+#g($rect.pos("80", "-25").round("3"), "-1") 
+#g($rect.pos("100", "-25").round("-3"), "-1") 
+
+#g($rect.pos("0", "25").round("0").leadin("0").ccw(), "-1") 
 #g($rect.pos("20", "25").round("5"), "-1") 
 #g($rect.pos("40", "25").round("-5"), "-1") 
+
+#g($rect.pos("60", "25").round("0").leadin("3").ccw(), "-1") 
+#g($rect.pos("80", "25").round("5"), "-1") 
+#g($rect.pos("100", "25").round("-5"), "-1") 
+
+#g($rect.pos("60", "50").round("0").leadin("-3").ccw(), "-1") 
+#g($rect.pos("80", "50").round("5"), "-1") 
+#g($rect.pos("100", "50").round("-5"), "-1") 
 
 m2

@@ -11,6 +11,12 @@
 <dd>Set the position and size of this rectangle based on another path. This is useful for testing.</dd>
 <dt>round("r")</dt>
 <dd>Set the corner radius for a rounded rectangle. Symbolic coordinates are accepted.</dd>
+<dt>cw()</dt>
+<dd>Clockwise direction. This is the default.</dd>
+<dt>ccw()</dt>
+<dd>Counterclockwise direction.</dd>
+<dt>leadin(<var>"dist"</var>)</dt>
+<dd>A leadin motion. If positive, the leadin will start inside the shape.</dd>
 </dl>
 
 
@@ -24,7 +30,7 @@
 <dt>cw()</dt>
 <dd>Clockwise circle. This is the default.</dd>
 <dt>ccw()</dt>
-<dd>Counterclockwise circle. This is the default.</dd>
+<dd>Counterclockwise circle.</dd>
 </dl>
 
 <h2>Helix</h2>
@@ -43,7 +49,7 @@ into the workpiece.</p>
 	<dt>cw()</dt>
 	<dd>Clockwise helix. This is the default.</dd>
 	<dt>ccw()</dt>
-	<dd>Counterclockwise helix. This is the default.</dd>
+	<dd>Counterclockwise helix.</dd>
 </dl>
 
 <h2>Polygon</h2>
