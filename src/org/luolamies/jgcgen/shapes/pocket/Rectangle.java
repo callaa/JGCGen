@@ -18,7 +18,9 @@ public class Rectangle implements PathGenerator {
 	private enum Dir {
 		POS,
 		NEG,
-		ALT
+		ALT,
+		CW,
+		CCW
 	};
 	
 	/**
@@ -111,7 +113,69 @@ public class Rectangle implements PathGenerator {
 		
 		Path path = new Path();
 		
-		if(h < w) {
+		if(dir==Dir.CW || dir==Dir.CCW) {
+			double cx = x + w/2;
+			double cy = y + h/2;
+			double dx, dy;
+			if(h < w) {
+				dx = stepover;
+				dy = h/w * stepover;
+			} else {
+				dy = stepover;
+				dx = w/h * stepover;
+			}
+			if(dir==Dir.CCW) {
+				dy = -dy;
+			}
+			
+			path.addSegment(Path.SType.MOVE, new NumericCoordinate(cx, cy, null));
+			double x=cx, y=cy;
+			for(int i=1;i<=Math.max(w,h)/stepover;i+=2) {
+				y += dy*i;
+				if(y>this.y+h)
+					y = this.y+h;
+				else if(y<this.y)
+					y = this.y;
+				path.addSegment(Path.SType.LINE, new NumericCoordinate(x, y, null));
+				x += dx*i;
+				if(x>this.x+w)
+					x = this.x+w;
+				path.addSegment(Path.SType.LINE, new NumericCoordinate(x, y, null));
+				y -= dy*(i+1);
+				if(y>this.y+h)
+					y = this.y+h;
+				else if(y<this.y)
+					y = this.y;
+				path.addSegment(Path.SType.LINE, new NumericCoordinate(x, y, null));
+				x -= dx*(i+1);
+				if(x<this.x)
+					x = this.x;
+				path.addSegment(Path.SType.LINE, new NumericCoordinate(x, y, null));
+			}
+			
+			// Final round
+			if(x>this.x)
+				path.addSegment(Path.SType.LINE, new NumericCoordinate(this.x, y, null));
+			
+			if(dir==Dir.CW) {
+				path.addSegment(Path.SType.LINE, new NumericCoordinate(this.x, this.y+h, null));
+				if(y>this.y){ 
+					path.addSegment(Path.SType.LINE, new NumericCoordinate(this.x+w, this.y+h, null));
+					path.addSegment(Path.SType.LINE, new NumericCoordinate(this.x+w, this.y, null));
+					path.addSegment(Path.SType.LINE, new NumericCoordinate(this.x, this.y, null));
+					path.addSegment(Path.SType.LINE, new NumericCoordinate(this.x, y, null));
+				}
+			} else {
+				path.addSegment(Path.SType.LINE, new NumericCoordinate(this.x, this.y, null));
+				if(y<this.y+h){ 
+					path.addSegment(Path.SType.LINE, new NumericCoordinate(this.x+w, this.y, null));
+					path.addSegment(Path.SType.LINE, new NumericCoordinate(this.x+w, this.y+h, null));
+					path.addSegment(Path.SType.LINE, new NumericCoordinate(this.x, this.y+h, null));
+					path.addSegment(Path.SType.LINE, new NumericCoordinate(this.x, y, null));
+				}
+			}
+			
+		} else if(h < w) {
 			double x0, x1, y0;
 			if(dir==Dir.NEG) {
 				x0 = x+w;

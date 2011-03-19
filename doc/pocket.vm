@@ -20,5 +20,14 @@
 <dt>rotate(angle)</dt><dd>Rotate the polygon. Angle is in degrees.</dd>
 </dl>
 
+<h2>Rectangle</h2>
+<p>This generates rectangular pockets. The generated toolpath can be either a scanning pattern or a spiral.</p>
+<dl class="methods">
+<dt>corners(<var>x1</var>, <var>y1</var>, <var>x2</var>, <var>y2</var>)</dt><dd>Set coordinates for the pocket corners</dd>
+<dt>bounds(<var>path</var>, <var>offset</var>)</dt><dd>Set coordinates from the boudning rectangle of another path.</dd>
+<dt>stepover(<var>stepover</var>)</dt><dd>Set stepover distance.</dd>
+<dt>dir(<var>"dir"</var>)</dt><dd>Set milling direction. Can be "pos", "neg", "alt", "cw" or "ccw". The default is "alt".</dd>
+</dl>
+
 #end
 #parse("base.tpl")

@@ -5,7 +5,7 @@ $default_f = 600
 $plunge_f = 100
 $passdepth = 3
 
-#set($rect = $Shapes.pocket.rectangle.corners(0,0,20,10).stepover(3))
+#set($rect = $Shapes.pocket.rectangle.corners(0,0,20,10).stepover(2))
 
 #g($rect.dir("pos").toPath().offset("x0"), "-1")
 #g($rect.dir("neg").toPath().offset("x25"), "-1")
@@ -15,6 +15,10 @@ $passdepth = 3
 #g($rect.dir("neg").toPath().offset("x15"), "-1")
 #g($rect.dir("alt").toPath().offset("x30"), "-1")
 
-#g($rect.corners(0,15,10,35).dir("cw").toPath().offset("x0"), "-1")
+#g($rect.corners(0,-5,10,-30).dir("cw").toPath(), "-1")
+#g($rect.dir("ccw").toPath().offset("x15"), "-1")
+
+#g($rect.corners(30,-5,55,-15).dir("cw").toPath(), "-1")
+#g($rect.dir("ccw").toPath().offset("x30"), "-1")
 
 m2

@@ -19,6 +19,7 @@
 #sample("sub", "Demonstrates subroutines and flow control")
 #sample("outlines", "Demonstrates outline path generators")
 #sample("pockets", "Demonstrates pocket path generators")
+#sample("pocket_rect", "Rectangle pockets")
 #sample("capture", "How to create custom paths")
 #sample("text", "How to render text")
 #sample("image", "Converting height map images to g-code")
@@ -27,6 +28,7 @@
 #sample("img_rough", "Image carving samples with <i>rough</i> strategy")
 #sample("img_interp", "Low resolution image interpolation test")
 #sample("projection", "Path projection onto image surface")
+#sample("import_svg", "SVG import demonstration")
 	</tbody>
 </table>
 
