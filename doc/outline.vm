@@ -21,6 +21,10 @@
 <dd>Set the center of the circle. If not set, the circle will be generated at (0,0). Symbolic coordinates are accepted.</dd>
 <dt>radius("radius")</dt>
 <dd>Set the circle radius. Symbolic coordinates are accepted.</dd>
+<dt>cw()</dt>
+<dd>Clockwise circle. This is the default.</dd>
+<dt>ccw()</dt>
+<dd>Counterclockwise circle. This is the default.</dd>
 </dl>
 
 <h2>Helix</h2>
@@ -36,6 +40,10 @@ into the workpiece.</p>
 	<dd>Set the pass depth</dt>
 	<dt>depth(double)</dt>
 	<dd>Set the depth of the helix. Bottom Z will be origin Z - depth.</dd>
+	<dt>cw()</dt>
+	<dd>Clockwise helix. This is the default.</dd>
+	<dt>ccw()</dt>
+	<dd>Counterclockwise helix. This is the default.</dd>
 </dl>
 
 <h2>Polygon</h2>

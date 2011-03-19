@@ -17,6 +17,7 @@ public class Helix implements PathGenerator {
 	private double radius;
 	private double depth;
 	private double passdepth;
+	private boolean ccw;
 	
 	/**
 	 * Set the top-center coordinates for the helix.
@@ -68,6 +69,16 @@ public class Helix implements PathGenerator {
 		return this;
 	}
 	
+	public Helix cw() {
+		ccw = false;
+		return this;
+	}
+	
+	public Helix ccw() {
+		ccw = true;
+		return this;
+	}
+	
 	public Path toPath() {
 		if(radius<=0)
 			throw new RenderException("Radius not set!");
@@ -82,6 +93,8 @@ public class Helix implements PathGenerator {
 		double z = origin.getValue(Axis.Z);
 		final double targz = z - depth;
 		
+		final SType arctype = ccw ? SType.CCWARC : SType.CWARC;
+		
 		while(z>targz) {
 			z -= passdepth;
 			if(z<targz)
@@ -89,14 +102,14 @@ public class Helix implements PathGenerator {
 			NumericCoordinate nc = (NumericCoordinate) origin.offset(new NumericCoordinate(null, radius, null));
 			nc.set(Axis.J, -radius);
 			nc.set(Axis.Z, z);
-			path.addSegment(SType.CWARC, nc);
+			path.addSegment(arctype, nc);
 		}
 		
 		// Finish the last circle
 		NumericCoordinate nc = (NumericCoordinate) origin.offset(new NumericCoordinate(null, radius, null));
 		nc.set(Axis.J, -radius);
 		nc.set(Axis.Z, z);
-		path.addSegment(SType.CWARC, nc);
+		path.addSegment(arctype, nc);
 		
 		return path;
 	}
