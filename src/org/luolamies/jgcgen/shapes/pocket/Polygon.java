@@ -11,7 +11,7 @@ public class Polygon implements PathGenerator {
 	private int vertices = 3;
 	private double rotate=0;
 	private double radius=1;
-	private double tooldia;
+	private double stepover;
 	private NumericCoordinate origin = new NumericCoordinate(0.0,0.0,null);
 	
 	/**
@@ -47,14 +47,14 @@ public class Polygon implements PathGenerator {
 	}
 
 	/**
-	 * Set the diamater of the tool.
+	 * Set the stepover
 	 * @param radius
 	 * @return this
 	 */
-	public Polygon tool(double dia) {
-		if(dia<=0)
-			throw new IllegalArgumentException("Tool diameter must be greater than zero!");
-		this.tooldia = dia;
+	public Polygon stepover(double stepover) {
+		if(stepover<=0)
+			throw new IllegalArgumentException("Stepover must be greater than zero!");
+		this.stepover = stepover;
 		return this;
 	}
 	
@@ -74,6 +74,11 @@ public class Polygon implements PathGenerator {
 	}
 
 	public Path toPath() {
+		if(stepover==0)
+			throw new IllegalArgumentException("Stepover not set!");
+		if(radius==0)
+			throw new IllegalArgumentException("Radius not set!");
+
 		Path path = new Path();
 		
 		path.addSegment(SType.MOVE, origin);
@@ -81,7 +86,7 @@ public class Polygon implements PathGenerator {
 		double r = 0;
 		
 		// Spiral outwards
-		double dr = tooldia/vertices;
+		double dr = stepover/vertices;
 		int finish=0;
 		while(r<radius) {
 			for(int i=0;i<vertices;++i) {
@@ -90,7 +95,7 @@ public class Polygon implements PathGenerator {
 					r += dr;
 					if(r>radius || Math.abs(r-radius) < 0.0001) {
 						r = radius;
-						finish = i+1;
+						finish = i + 1;
 					}
 				}
 			}

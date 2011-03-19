@@ -13,10 +13,10 @@
 <h2>Polygon</h2>
 <p>This generates a polygonal pocket with a path that spirals outwards from the center.</p>
 <dl class="methods">
-<dt>radius(double)</dt><dd>Set the pocket radius</dd>
-<dt>tool(double)</dt><dd>Set the tool diameter</dd>
+<dt class="required">radius(double)</dt><dd>Set the pocket radius</dd>
+<dt class="required">stepover(double)</dt><dd>Set the stepover</dd>
 <dt>origin("coords")</dt><dd>Set the pocket center coordinates. Only numeric coordinates are supported. Default is X0 Y0.</dd>
-<dt>sides(sides)</dt><dd>Number of sides in the polygon. Minimum is 3.</dd>
+<dt class="required">sides(sides)</dt><dd>Number of sides in the polygon. Minimum is 3.</dd>
 <dt>rotate(angle)</dt><dd>Rotate the polygon. Angle is in degrees.</dd>
 </dl>
 
