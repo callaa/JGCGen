@@ -30,6 +30,8 @@ public class Polygon implements PathGenerator {
 	private int vertices = 3;
 	private double rotate=0;
 	private double radius=1;
+	private double leadin=0;
+	private boolean ccw;
 	private NumericCoordinate origin = new NumericCoordinate(0.0,0.0,null);
 	
 	/**
@@ -79,6 +81,21 @@ public class Polygon implements PathGenerator {
 		return this;
 	}
 	
+	public Polygon cw() {
+		this.ccw = false;
+		return this;
+	}
+	
+	public Polygon ccw() {
+		this.ccw = true;
+		return this;
+	}
+	
+	public Polygon leadin(double leadin) {
+		this.leadin = leadin;
+		return this;
+	}
+	
 	public Path toPath() {
 		Path path = new Path();
 		
@@ -86,9 +103,34 @@ public class Polygon implements PathGenerator {
 		double oy = origin.getValue(Axis.Y);
 		Double oz = origin.getValue(Axis.Z);
 		
-		for(int i=0;i<=vertices;++i) {
-			double a = (i / (double)vertices * 2.0 * Math.PI) + rotate;
-			path.addSegment(i==0 ? Path.SType.MOVE : Path.SType.LINE,
+		if(leadin!=0) {
+			path.addSegment(Path.SType.MOVE, new NumericCoordinate(
+					ox + Math.sin(rotate) * (radius-leadin),
+					oy + Math.cos(rotate) * (radius-leadin),
+					oz));
+			path.addSegment(Path.SType.LINE, new NumericCoordinate(
+					ox + Math.sin(rotate) * radius,
+					oy + Math.cos(rotate) * radius,
+					oz));
+			
+		} else {
+			path.addSegment(Path.SType.MOVE,
+					new NumericCoordinate(
+							ox + Math.sin(rotate) * radius,
+							oy + Math.cos(rotate) * radius,
+							oz
+							));
+		}
+		
+		for(int i=1;i<=vertices;++i) {
+			int j;
+			if(ccw)
+				j = vertices-i;
+			else
+				j=i;
+			
+			double a = (j / (double)vertices * 2.0 * Math.PI) + rotate;
+			path.addSegment(Path.SType.LINE,
 					new NumericCoordinate(
 							ox + Math.sin(a) * radius,
 							oy + Math.cos(a) * radius,

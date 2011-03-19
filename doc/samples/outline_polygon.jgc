@@ -1,0 +1,23 @@
+#boilerplate
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+$passdepth = 3
+
+## Uncomment this to disable multiple passes
+##set($r3singlepass = true)
+
+## 2D outlines
+#set($pg = $Shapes.outline.polygon.radius(10).sides(5))
+
+#g($pg.cw().origin("x0y0"), "-1")
+#g($pg.ccw().origin("x25y0"), "-1")
+
+#g($pg.cw().origin("x0y25").leadin(3), "-1")
+#g($pg.ccw().origin("x25y25").leadin(3), "-1")
+
+#g($pg.cw().origin("x0y50").leadin(-3), "-1")
+#g($pg.ccw().origin("x25y50").leadin(-3), "-1")
+
+m2
