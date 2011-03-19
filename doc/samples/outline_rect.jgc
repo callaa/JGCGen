@@ -1,0 +1,22 @@
+#boilerplate
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+$passdepth = 2
+
+## Uncomment this to disable multiple passes
+##set($r3singlepass = true)
+
+#set($rect = $Shapes.outline.rectangle)
+
+
+#g($rect.pos("0", "0").size("15", "20"), "-1") 
+#g($rect.pos("20", "0").round("3"), "-1") 
+#g($rect.pos("40", "0").round("-3"), "-1") 
+
+#g($rect.pos("0", "25").round("0").ccw(), "-1") 
+#g($rect.pos("20", "25").round("5"), "-1") 
+#g($rect.pos("40", "25").round("-5"), "-1") 
+
+m2

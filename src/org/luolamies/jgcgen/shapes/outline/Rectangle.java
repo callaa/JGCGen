@@ -26,16 +26,37 @@ import org.luolamies.jgcgen.path.Path.SType;
 
 import static org.luolamies.jgcgen.path.Coordinate.parse;
 
+/**
+ * A rectangle outline
+ *
+ */
 public class Rectangle implements PathGenerator {
 	private String x,y;
 	private String w;
 	private String h;
 	private String round;
 	private boolean concave=false;
+	private boolean ccw;
 	
-	public Rectangle corners(String x, String y, String w, String h) {
+	/**
+	 * Set the coordinates for the top left corner
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Rectangle pos(String x, String y) {		
 		this.x = x;
 		this.y = y;
+		return this;
+	}
+	
+	/**
+	 * Set the width and height
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public Rectangle size(String w, String h) {		
 		this.w = w;
 		this.h = h;
 		return this;
@@ -86,6 +107,28 @@ public class Rectangle implements PathGenerator {
 		return this;
 	}
 
+	/**
+	 * Clockwise
+	 */
+	public Rectangle cw() {
+		this.ccw = false;
+		return this;
+	}
+	
+	/**
+	 * Counter clockwise
+	 */
+	public Rectangle ccw() {
+		this.ccw = true;
+		return this;
+	}
+	
+	/**
+	 * Set corner radius.
+	 * If radius is negative, the corners will be concave.
+	 * @param radius
+	 * @return this
+	 */
 	public Rectangle round(String radius) {
 		this.round = radius;
 		if(round.length()>0 && round.charAt(0)=='-') {
@@ -98,76 +141,120 @@ public class Rectangle implements PathGenerator {
 	
 	@Override
 	public Path toPath() {
-		if(x==null || y==null || w==null || h==null)
-			throw new NullPointerException("You must set the rectangle corners!");
+		if(x==null || y==null)
+			throw new NullPointerException("You must set the rectangle position!");
+		if(w==null || h==null)
+			throw new NullPointerException("You must set the rectangle size!");
 		
 		Path path = new Path();
-		if(round!=null) {
+		
+		Coordinate topleft = parse("x"+x + "y"+y);
+		
+		Coordinate cw = parse("x" + w);
+		Coordinate ch = parse("y-" + h);
+		
+		if(round!=null && round.length()>0 && !"0".equals(round)) {
 			// Rounded rectangle
 			Coordinate xr = parse("x"+round);
 			Coordinate yr = parse("y"+round);
 			
-			Coordinate topleft = parse("x"+x + "y"+y);
+			path.addSegment(SType.MOVE, topleft.offset(xr));
 			
-			Coordinate cw = parse("x" + w);
-			Coordinate ch = parse("y-" + h);
-			 
 			if(concave) {
-				path.addSegment(SType.MOVE, topleft.offset(xr));
-				
-				path.addSegment(SType.CWARC,
-						topleft.offset(parse("y-"+round+"i-"+round), false, true)
-						);
-				
 				Coordinate btmleft = topleft.offset(ch);
-				path.addSegment(SType.LINE, btmleft.offset(yr));
-				path.addSegment(SType.CWARC, btmleft.offset(parse("x"+round+"j-"+round), false, true));
 				
-				Coordinate btmright = btmleft.offset(cw);
-				path.addSegment(SType.LINE, btmright.offset(xr,true,false));
-				path.addSegment(SType.CWARC, btmright.offset(parse("y"+round+"i"+round),false,true));
-				
-				Coordinate topright = topleft.offset(cw);
-				path.addSegment(SType.LINE, topright.offset(yr,true,false));
-				path.addSegment(SType.CWARC, topright.offset(parse("x-"+round+"j"+round),false,true));
-				
-				path.addSegment(SType.LINE, topleft.offset(xr));
+				if(!ccw) {
+					path.addSegment(SType.LINE, topleft.offset(cw).offset(xr,true,false));
+					path.addSegment(SType.CCWARC,
+							topleft.offset(cw).offset(parse("y-"+round+"i"+round), false, true));
+					
+					path.addSegment(SType.LINE, btmleft.offset(cw).offset(yr));
+					path.addSegment(SType.CCWARC,
+							btmleft.offset(cw).offset(parse("x-"+round+"j-"+round), false, true));
+					
+					path.addSegment(SType.LINE, btmleft.offset(xr));
+					path.addSegment(SType.CCWARC,
+							btmleft.offset(parse("y"+round+"i-"+round), false, true));
+					
+					path.addSegment(SType.LINE, topleft.offset(yr,true,false));
+					path.addSegment(SType.CCWARC,
+							topleft.offset(parse("x"+round+"j"+round), false, true));
+					
+				} else {
+					path.addSegment(SType.CWARC,
+							topleft.offset(parse("y-"+round+"i-"+round), false, true)
+							);
+					
+					path.addSegment(SType.LINE, btmleft.offset(yr));
+					path.addSegment(SType.CWARC, btmleft.offset(parse("x"+round+"j-"+round), false, true));
+					
+					Coordinate btmright = btmleft.offset(cw);
+					path.addSegment(SType.LINE, btmright.offset(xr,true,false));
+					path.addSegment(SType.CWARC, btmright.offset(parse("y"+round+"i"+round),false,true));
+					
+					Coordinate topright = topleft.offset(cw);
+					path.addSegment(SType.LINE, topright.offset(yr,true,false));
+					path.addSegment(SType.CWARC, topright.offset(parse("x-"+round+"j"+round),false,true));
+					
+					path.addSegment(SType.LINE, topleft.offset(xr));
+				}
 				
 			} else {
 				Coordinate topright = topleft.offset(cw);
 				
-				path.addSegment(SType.MOVE, topleft.offset(xr));
-				path.addSegment(SType.LINE, topright.offset(xr, true, false));
-				
-				path.addSegment(SType.CWARC,
-						topright.offset(parse("y-"+round+"j-"+round), false, true)
-						);
-				
-				path.addSegment(SType.LINE, topright.offset(ch).offset(yr));
-				path.addSegment(SType.CWARC,
-						topright.offset(ch).offset(parse("x-"+round+"i-"+round), false, true));
-				
-				path.addSegment(SType.LINE, topleft.offset(ch).offset(xr));
-				path.addSegment(SType.CWARC,
-						topleft.offset(ch).offset(parse("y"+round+"j"+round), false, true));
-				
-				path.addSegment(SType.LINE, topleft.offset(yr, true, false));
-				path.addSegment(SType.CWARC,
-						topleft.offset(parse("x"+round+"i"+round), false, true));
+				if(ccw) {
+					path.addSegment(SType.CCWARC,
+							topleft.offset(parse("y-"+round+"j-"+round), false, true)
+							);
+					
+					path.addSegment(SType.LINE, topleft.offset(ch).offset(yr));
+					path.addSegment(SType.CCWARC,
+							topleft.offset(ch).offset(parse("x"+round+"i"+round), false, true));
+					
+					path.addSegment(SType.LINE, topright.offset(ch).offset(xr, true, false));
+					path.addSegment(SType.CCWARC,
+							topright.offset(ch).offset(parse("y"+round+"j"+round), false, true));
+					
+					path.addSegment(SType.LINE, topright.offset(yr, true, false));
+					path.addSegment(SType.CCWARC,
+							topright.offset(parse("x-"+round+"i-"+round), false, true));
+					
+					path.addSegment(SType.LINE, topleft.offset(xr));
+				} else {
+					path.addSegment(SType.LINE, topright.offset(xr, true, false));
+					
+					path.addSegment(SType.CWARC,
+							topright.offset(parse("y-"+round+"j-"+round), false, true)
+							);
+					
+					path.addSegment(SType.LINE, topright.offset(ch).offset(yr));
+					path.addSegment(SType.CWARC,
+							topright.offset(ch).offset(parse("x-"+round+"i-"+round), false, true));
+					
+					path.addSegment(SType.LINE, topleft.offset(ch).offset(xr));
+					path.addSegment(SType.CWARC,
+							topleft.offset(ch).offset(parse("y"+round+"j"+round), false, true));
+					
+					path.addSegment(SType.LINE, topleft.offset(yr, true, false));
+					path.addSegment(SType.CWARC,
+							topleft.offset(parse("x"+round+"i"+round), false, true));
+				}
 			}
 			
 		} else {
-			// Sharp cornered rectangle
-			Coordinate topleft = parse("x"+x + "y"+y);
-			Coordinate cw = parse("x" + w);
-			Coordinate ch = parse("y-" + h);
-			
+			// Sharp cornered rectangle			
 			Coordinate topright = topleft.offset(cw);
 			
 			path.addSegment(SType.MOVE, topleft);
-			path.addSegment(SType.LINE, topright);
-			path.addSegment(SType.LINE, topright.offset(ch));
-			path.addSegment(SType.LINE, topleft.offset(ch));
+			if(ccw) {
+				path.addSegment(SType.LINE, topleft.offset(ch));
+				path.addSegment(SType.LINE, topright.offset(ch));
+				path.addSegment(SType.LINE, topright);
+			} else {
+				path.addSegment(SType.LINE, topright);
+				path.addSegment(SType.LINE, topright.offset(ch));
+				path.addSegment(SType.LINE, topleft.offset(ch));
+			}
 			path.addSegment(SType.LINE, topleft);
 		}
 		
