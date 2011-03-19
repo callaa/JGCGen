@@ -12,6 +12,12 @@ $passdepth = 3
 #g($circle.cw().origin("x0y0"), "-5")
 #g($circle.ccw().origin("x25y0"), "-5")
 
+#g($circle.cw().leadin("3").origin("x0y-30"), "-5")
+#g($circle.ccw().leadin("3").origin("x25y-30"), "-5")
+
+#g($circle.cw().leadin("-3").origin("x50y-30"), "-5")
+#g($circle.ccw().leadin("-3").origin("x75y-30"), "-5")
+
 ## Special feed rate for 3D paths
 $router.push()
 $router.setOverride("default_f", "300")

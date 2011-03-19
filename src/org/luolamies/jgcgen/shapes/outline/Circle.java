@@ -24,6 +24,7 @@ import org.luolamies.jgcgen.path.Path.SType;
 public class Circle implements PathGenerator {
 	private String radius = "1";
 	private String origin;
+	private String leadin;
 	private boolean ccw;
 	
 	public Circle origin(String origin) {
@@ -46,6 +47,14 @@ public class Circle implements PathGenerator {
 		return this;
 	}
 	
+	public Circle leadin(String leadin) {
+		if(leadin.length()==0 || "0".equals(leadin))
+			this.leadin = null;
+		else
+			this.leadin = leadin;
+		return this;
+	}
+	
 	@Override
 	public Path toPath() {
 		Path p = new Path();
@@ -56,7 +65,17 @@ public class Circle implements PathGenerator {
 		else
 			pos = Coordinate.parse("y"+radius);
 		
-		p.addSegment(SType.MOVE, pos);
+		if(leadin!=null) {
+			if(ccw ^ leadin.charAt(0)=='-') {
+				p.addSegment(SType.MOVE, pos.offset(Coordinate.parse("x"+leadin+"y-"+leadin)));
+				p.addSegment(SType.CCWARC, pos.offset(Coordinate.parse("i-"+leadin), false, true));
+			} else {
+				p.addSegment(SType.MOVE, pos.offset(Coordinate.parse("x-"+leadin+"y-"+leadin)));
+				p.addSegment(SType.CWARC, pos.offset(Coordinate.parse("i"+leadin), false, true));
+			}
+		} else
+			p.addSegment(SType.MOVE, pos);
+		
 		p.addSegment(ccw ? SType.CCWARC : SType.CWARC, pos.offset(Coordinate.parse("j-"+radius), false, true));
 		
 		return p;

@@ -31,6 +31,8 @@
 <dd>Clockwise circle. This is the default.</dd>
 <dt>ccw()</dt>
 <dd>Counterclockwise circle.</dd>
+<dt>leadin(<var>"dist"</var>)</dt>
+<dd>A leadin motion. If positive, the leadin will start inside the shape.</dd>
 </dl>
 
 <h2>Helix</h2>
