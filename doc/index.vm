@@ -32,7 +32,7 @@ o100 call [param1] [param2]
 <p>The conversion is done by Router classes. Currently, only a path router intended for 3 axis mills is implemented.</p>
 <p>Example:</p>
 #set($r3="r3")
-<pre class="code">\#g(\$Shapes.outline.rectangle.corners("10","10", "#1", "#2").round("3"), "-5" )
+<pre class="code">\#g(\$Shapes.outline.rectangle.pos("10","10").size("#1", "#2").round("3"), "-5" )
 </pre>
 <p>The above snippet generates a tool path for cutting a rounded rectangle shape 5 mm deep, with the top left corner at (10,10) and bottom right corner at (10+#1, 10+#2).</p>
 

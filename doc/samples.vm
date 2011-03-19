@@ -17,6 +17,7 @@
 	<tbody>
 #sample("demo", "A simple demonstration script")
 #sample("sub", "Demonstrates subroutines and flow control")
+#sample("outline_line", "Straight lines")
 #sample("outline_circle", "Circular outlines")
 #sample("outline_rect", "Rectangle outlines")
 #sample("outline_polygon", "Polygon outlines")

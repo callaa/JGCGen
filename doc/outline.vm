@@ -2,13 +2,26 @@
 <p>JGCGen comes bundled with a few generators for commonly used outline paths. To get an outline generator, use the Shapes object. For example: <code>\$Shapes.outline.circle</code>.</p>
 <p>Each outline generator has a few properties that should be set before using. For example: <code>\#g(\$Shapes .outline.circle.radius(10))</code>.</p>
 
+<h2>Line</h2>
+<p>Generates straight lines.</p>
+<dl class="methods">
+<dt class="required">from(<var>"coords"</var>)</dt>
+<dd>Set the starting point of the line. Symbolic coordinates are accepted.</dd>
+<dt class="required">to(<var>"coords"</var>)</dt>
+<dd>Set the ending point of the line. Symbolic coordinates are accepted.</dd>
+<dt>depth([<var>z0</var>], <var>z1</var>, <var>passdepth</var>)</dt>
+<dd>Set the depth of cut. If set, a 3D zigzagging path that cuts to the given depth is generated. Z0 is the starting depth. If omitted, it will be 0.
+This is an alternative to giving a Z offset to \#g().</dd>
+</dl>
+
 <h2>Rectangle</h2>
 <p>Generate rectangles.</p>
 <dl class="methods">
-<dt>corner("x", "y", "w", "h")</dt>
+<dt class="required">pos("x", "y")</dt>
+<dt class="required">size("w", "h")</dt>
 <dd>Set the position and size of the rectangle. Symbolic coordinates are accepted.</dd>
 <dt>bounds(Path)</dt>
-<dd>Set the position and size of this rectangle based on another path. This is useful for testing.</dd>
+<dd>Set the position and size of this rectangle to the bounding rectangle of another path. This is useful for testing.</dd>
 <dt>round("r")</dt>
 <dd>Set the corner radius for a rounded rectangle. Symbolic coordinates are accepted.</dd>
 <dt>cw()</dt>
@@ -25,7 +38,7 @@
 <dl class="methods">
 <dt>origin("coords")</dt>
 <dd>Set the center of the circle. If not set, the circle will be generated at (0,0). Symbolic coordinates are accepted.</dd>
-<dt>radius("radius")</dt>
+<dt class="required">radius("radius")</dt>
 <dd>Set the circle radius. Symbolic coordinates are accepted.</dd>
 <dt>cw()</dt>
 <dd>Clockwise circle. This is the default.</dd>
@@ -42,11 +55,11 @@ into the workpiece.</p>
 <dl class="methods">
 	<dt>origin("coords")</dt>
 	<dd>Set the center and top coordinates. If not set, X0Y0Z0 will be used. Only numeric coordinates are accepted.</dd>
-	<dt>radius(double)</dt>
+	<dt class="required">radius(double)</dt>
 	<dd>Set the helix radius</dt>
-	<dt>pass(double)</dt>
+	<dt class="required">pass(double)</dt>
 	<dd>Set the pass depth</dt>
-	<dt>depth(double)</dt>
+	<dt class="required">depth(double)</dt>
 	<dd>Set the depth of the helix. Bottom Z will be origin Z - depth.</dd>
 	<dt>cw()</dt>
 	<dd>Clockwise helix. This is the default.</dd>
@@ -57,11 +70,11 @@ into the workpiece.</p>
 <h2>Polygon</h2>
 <p>Generate a polygon with arbitrary number of sides.</p>
 <dl class="methods">
-<dt>sides(int)</dt>
+<dt class="required">sides(int)</dt>
 <dd>The number of sides in the polygon (must be at least 3)</dd>
 <dt>rotate(double)</dt>
 <dd>How much the polygon should be rotated (in degrees.)</dd>
-<dt>radius(double)</dt>
+<dt class="required">radius(double)</dt>
 <dd>The polygon radius</dd>
 </dl>
 

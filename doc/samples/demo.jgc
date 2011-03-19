@@ -10,7 +10,7 @@ $passdepth = 3
 #<_cut>	= -6	(cut-out depth)
 
 (Chamfer)
-#g($Shapes.outline.rectangle.corners("0","0","60","25").round("-5"), "#<_engrave>")
+#g($Shapes.outline.rectangle.pos("0","0").size("60","25").round("-5"), "#<_engrave>")
 
 (Lettering)
 $router.setOverride("rapidnear", "true")
@@ -19,7 +19,7 @@ $font.setOption("lspace", 3)
 #g($font.getString("JGCGen").center("xy").scale("0.5").offset("x30 y-12.5"), "#<_engrave>")
 
 (Cut out)
-#g($Shapes.outline.rectangle.corners("-1.5","1.5","63","28").round("-5"), "#<_cut>")
+#g($Shapes.outline.rectangle.pos("-1.5","1.5").size("63","28").round("-5"), "#<_cut>")
 
 m2
 

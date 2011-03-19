@@ -1,0 +1,19 @@
+#boilerplate
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+$passdepth = 2
+
+#set($line = $Shapes.outline.line)
+
+#g($line.from("x0y0").to("x10y5"), "-5")
+
+#g($line.from("x15y0z0").to("x25y5z-5"))
+
+#g($line.from("x30y0").to("x40y5").depth(0, -5, -0.5))
+
+#g($line.from("x45y0").to("x60y5").depth(-5, -10, -0.5))
+
+
+m2
