@@ -16,7 +16,7 @@ public class Image implements PathGenerator {
 	private String filename;
 	private String strategy="simple";
 	private boolean invert, normalize, flip, mirror, rotate;
-	private float xsize=-1, ysize=-1, zscale=1.0f;
+	private double xsize=-1, ysize=-1, zscale=1.0;
 	private String stepover="";
 	private Tool tool;
 	
@@ -130,7 +130,7 @@ public class Image implements PathGenerator {
 	 * @param scale
 	 * @return
 	 */
-	public Image height(float scale) {
+	public Image height(double scale) {
 		this.zscale = scale;
 		return this;
 	}
@@ -142,7 +142,7 @@ public class Image implements PathGenerator {
 	 * @param y height in millimeters or inches
 	 * @return
 	 */
-	public Image size(float x,float y) {
+	public Image size(double x,double y) {
 		if(x<=0 || y<=0)
 			throw new IllegalArgumentException("Dimensions must be greater than zero!");
 		this.xsize = x;
