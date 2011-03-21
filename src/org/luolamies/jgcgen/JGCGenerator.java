@@ -100,7 +100,6 @@ public class JGCGenerator {
 		logger = new Logger(cmd.hasOption('v'));
 		
 		// Select input source
-		File workdir;
 		String inputfile;
 		
 		if(cmd.getArgs()[0].equals("-")) {
@@ -111,9 +110,7 @@ public class JGCGenerator {
 				}
 				outputfile = "-";
 			}
-			
-			workdir = new File(".");
-			
+						
 			inputfile = "STDIN";
 			
 			StringWriter str = new StringWriter();
@@ -138,7 +135,7 @@ public class JGCGenerator {
 			if(in.canRead()==false) {
 				logger.fatal(in.getAbsolutePath() + ": Cannot read!", null);
 			}
-			workdir = in.getAbsoluteFile().getParentFile();
+			Files.setWorkdir(in.getAbsoluteFile().getParentFile());
 			
 			inputfile = in.getName();
 			
@@ -161,7 +158,7 @@ public class JGCGenerator {
 		// Initialize Velocity
 		Velocity.setProperty("input.encoding", System.getProperty("file.encoding"));
 		Velocity.setProperty("output.encoding", System.getProperty("file.encoding"));
-		Velocity.setProperty("file.resource.loader.path", workdir.getAbsolutePath());
+		Velocity.setProperty("file.resource.loader.path", Files.getWorkdir().getAbsolutePath());
 		Velocity.setProperty(Velocity.RUNTIME_LOG_LOGSYSTEM, logger);
 		
 		Properties props = new Properties();

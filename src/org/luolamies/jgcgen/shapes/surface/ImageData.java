@@ -4,10 +4,11 @@ import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.awt.image.Raster;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import org.luolamies.jgcgen.Files;
 
 /**
  * A heightmap image
@@ -20,7 +21,7 @@ final class ImageData extends Surface {
 	private double xyscale, zscale;
 	
 	ImageData(String filename, boolean normalize, boolean invert, boolean flip, boolean mirror, boolean rotate) throws IOException {
-		BufferedImage img = ImageIO.read(new File(filename));
+		BufferedImage img = ImageIO.read(Files.get(filename));
 		if(rotate) {
 			width = img.getHeight();
 			height = img.getWidth();

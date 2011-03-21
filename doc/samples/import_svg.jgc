@@ -7,7 +7,7 @@ $plunge_f = 100
 $passdepth = 2
 
 (Demonstrate SVG import)
-#set($svg = $Import.file("samples/svgtest.svg"))
+#set($svg = $Import.file("svgtest.svg"))
 
 #split(1)
 (Text carving)

@@ -1,12 +1,12 @@
 package org.luolamies.jgcgen.importer.svg;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.luolamies.jgcgen.Files;
 import org.luolamies.jgcgen.RenderException;
 import org.luolamies.jgcgen.importer.Importer;
 import org.w3c.dom.Document;
@@ -25,7 +25,7 @@ public class SvgImporter extends Importer {
 			throw new RenderException("Couldn't construct document builder", e);
 		}
 		
-		Document doc = builder.parse(new File(file));
+		Document doc = builder.parse(Files.get(file));
 		
 		root = doc.getDocumentElement();
 		scale(1.0 / (90 / 25.5));

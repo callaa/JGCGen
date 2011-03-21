@@ -6,7 +6,7 @@ $default_f = 600
 $plunge_f = 100
 
 (Demonstrate roughing toolpaths)
-#set($img = $Shapes.surface.image.file("samples/suzanne.png").size(50,50).height(8).tool("3 ball").stepover("50%"))
+#set($img = $Shapes.surface.image.file("suzanne.png").size(50,50).height(8).tool("3 ball").stepover("50%"))
 
 #g($img.origin("x0y0").strategy("rough 0 0 pos"))
 #g($img.origin("x0y60").strategy("rough 0 0 neg"))

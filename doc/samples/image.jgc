@@ -6,7 +6,7 @@ $default_f = 600
 $plunge_f = 100
 
 (Image carving)
-#set($img = $Shapes.surface.image.file("samples/suzanne.png").size(50,50).height(8).tool("3 ball"))
+#set($img = $Shapes.surface.image.file("suzanne.png").size(50,50).height(8).tool("3 ball"))
 
 #g($img.strategy("rough").stepover("50%"))
 

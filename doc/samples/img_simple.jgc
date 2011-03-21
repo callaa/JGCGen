@@ -6,7 +6,7 @@ $default_f = 600
 $plunge_f = 100
 
 (Image carving: Simple strategy samples)
-#set($img = $Shapes.surface.image.file("samples/suzanne.png").size(50,50).height(8).tool("3 ball"))
+#set($img = $Shapes.surface.image.file("suzanne.png").size(50,50).height(8).tool("3 ball"))
 
 #g($img.origin("x0y0").strategy("simple 0 pos").stepover(0))
 #g($img.origin("x0y40").strategy("simple 0 neg").stepover(0))
