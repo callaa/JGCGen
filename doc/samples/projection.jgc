@@ -7,7 +7,7 @@ $default_f = 600
 $plunge_f = 100
 
 ## Load the surface onto which the text will be projected
-#set($img = $Shapes.surface.image.file("samples/ball.png").size(220,220).height(10))
+#set($img = $Shapes.surface.image.file("ball.png").size(220,220).height(10))
 
 ## The surface
 #set($surf = $img.Surface)

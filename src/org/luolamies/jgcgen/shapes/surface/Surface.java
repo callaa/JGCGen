@@ -54,8 +54,8 @@ public abstract class Surface {
 	public double getDepthAt(double cx, double cy, Tool tool) {
 		final double rad = tool.getRadius();
 		double res = getResolution() / 2;
-		double minx = cx-rad, miny = cy-rad;
-		double maxx = cx+rad, maxy = cy+rad;
+		final double minx = cx-rad, miny = cy-rad;
+		final double maxx = cx+rad, maxy = cy+rad;
 		double maxz = -getMaxZ();
 		
 		if(2*rad < res) {
@@ -63,14 +63,16 @@ public abstract class Surface {
 			res = rad / 2; 
 		}
 		
+		final double radrad = rad*rad;
+		
 		//System.err.println("Get depth at " + cx + ", " + cy + " with " + tool.getRadius() + " at " + res);
 		for(double y=miny;y<maxy;y+=res) {
 			for(double x=minx;x<maxx;x+=res) {
-				double r = Math.hypot(x-cx, y-cy); 
-				if(r <= rad) {
+				double rr = (x-cx)*(x-cx) + (y-cy)*(y-cy); 
+				if(rr <= radrad) {
 					// Maximum allowed depth for the tool at this pixel when centered
 					// at cx, cy and taking in account the tool shape
-					double v = getDepthAt(x,y) - tool.getProfile(r);
+					double v = getDepthAt(x,y) - tool.getProfile(rr);
 					if(v>maxz)
 						maxz = v;
 				}

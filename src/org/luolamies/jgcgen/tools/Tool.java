@@ -46,8 +46,8 @@ public abstract class Tool {
 	
 	/**
 	 * Get the Z offset relative to tool tip at distance r from tool center.
-	 * @param r distance from center
+	 * @param r distance from center squared
 	 * @return Z offset
 	 */
-	public abstract double getProfile(double r);
+	public abstract double getProfile(double rr);
 }

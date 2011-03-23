@@ -59,6 +59,10 @@ public class JGCGenerator {
 
 	static private Logger logger;
 	
+	static public Logger getLogger() {
+		return logger;
+	}
+	
 	public static void main(String[] args) {
 
 		// Default flags

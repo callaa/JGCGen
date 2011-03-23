@@ -3,7 +3,7 @@ html/%.html : %.vm
 	java -jar ../jgcgen.jar $< -o $@
 
 %.ngc : %.jgc
-	java -jar ../jgcgen.jar $< -o $@
+	java -jar ../jgcgen.jar -v $< -o $@
 
 # Which templates to render
 VMS=$(wildcard *.vm)

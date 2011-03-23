@@ -1,5 +1,7 @@
 package org.luolamies.jgcgen.shapes.surface;
 
+import org.luolamies.jgcgen.JGCGenerator;
+import org.luolamies.jgcgen.Logger;
 import org.luolamies.jgcgen.path.NumericCoordinate;
 import org.luolamies.jgcgen.path.Path;
 import org.luolamies.jgcgen.path.Path.SType;
@@ -122,8 +124,11 @@ class SimpleStrategy implements ImageStrategy {
 			jmax = -jmax;
 		}
 		
+		final Logger log = JGCGenerator.getLogger();
+		
 		boolean first=true;
 		while(true) {
+			log.progress("SimpleStrategy", i, imax);
 			scanline(path, img, first | dir!=Dir.ALT, dir!=Dir.NEG, i, jmin, jmax, dj);
 			first = false;
 			
@@ -139,7 +144,7 @@ class SimpleStrategy implements ImageStrategy {
 				i = incr(i, imax, so);
 			}
 		}
-		
+				
 		return path;
 	}
 }

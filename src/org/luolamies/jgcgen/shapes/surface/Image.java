@@ -2,6 +2,7 @@ package org.luolamies.jgcgen.shapes.surface;
 
 import java.io.IOException;
 
+import org.luolamies.jgcgen.JGCGenerator;
 import org.luolamies.jgcgen.RenderException;
 import org.luolamies.jgcgen.path.Axis;
 import org.luolamies.jgcgen.path.Coordinate;
@@ -302,6 +303,11 @@ public class Image implements PathGenerator {
 		}
 		
 		// Generate toolpath
-		return is.toPath(imgcache).reduce();
+		long time = System.currentTimeMillis();
+		Path path = is.toPath(imgcache);
+		time = System.currentTimeMillis() - time;
+		JGCGenerator.getLogger().status(is.getClass().getSimpleName() + " finished. Took " + String.format("%.2f", time/1000.0) + " seconds.");
+		
+		return path.reduce();
 	}
 }

@@ -48,6 +48,27 @@ public class Logger implements LogChute {
 		System.exit(1);
 	}
 	
+	/**
+	 * Print a status message if in verbose mode.
+	 * @param message
+	 */
+	public void status(String message) {
+		if(verbose)
+			System.err.println(message);
+	}
+	
+	/**
+	 * Print completion messages
+	 * @param message
+	 * @param value
+	 * @param max
+	 */
+	public void progress(String message, double current, double max) {
+		if(verbose) {
+			System.err.println(String.format("%s: %.2f%%", message, current/max*100));
+		}
+	}
+	
 	@Override
 	public void log(int level, String message) {
 		if(level>0)

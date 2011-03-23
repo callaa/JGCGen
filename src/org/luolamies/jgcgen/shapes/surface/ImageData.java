@@ -124,10 +124,12 @@ final class ImageData extends Surface {
 		
 		int yy = width * iy;
 		
+		double fx1 = 1.0-fx;
+		double fy1 = 1.0-fy;
 		return zscale * (
-				data[yy + ix] * ((1-fx) * (1-fy)) +
-			    data[yy + ix + 1] * (fx * (1-fy)) +
-			    data[yy + width + ix] * ((1-fx) * fy) +
+				data[yy + ix] * (fx1 * fy1) +
+			    data[yy + ix + 1] * (fx * fy1) +
+			    data[yy + width + ix] * (fx1 * fy) +
 			    data[yy + width + ix + 1] * (fx*fy)
 			    )
 		    ;

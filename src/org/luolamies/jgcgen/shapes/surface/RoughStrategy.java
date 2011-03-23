@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.luolamies.jgcgen.JGCGenerator;
+import org.luolamies.jgcgen.Logger;
 import org.luolamies.jgcgen.path.Coordinate;
 import org.luolamies.jgcgen.path.NumericCoordinate;
 import org.luolamies.jgcgen.path.Path;
-import org.luolamies.jgcgen.path.Path.SType;
 
 import static org.luolamies.jgcgen.shapes.surface.SurfaceUtils.incr;
 import static org.luolamies.jgcgen.shapes.surface.SurfaceUtils.safeline;
@@ -99,7 +100,10 @@ public class RoughStrategy implements ImageStrategy {
 		Path path = new Path();
 		final double minlevel = -img.getMaxZ();
 		double level = 0;
+		final Logger log = JGCGenerator.getLogger();
+		
 		do {
+			log.progress("RoughStrategy", -level, -minlevel);
 			level = incr(level, minlevel, passdepth);
 			if(!doPass(path, level, img, stepover))
 				break;
