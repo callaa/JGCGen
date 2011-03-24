@@ -1,0 +1,15 @@
+#boilerplate
+#set($rapidnear = true)
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+
+(Parametric surface)
+#set($surf = $Shapes.surface.parametric.f("(x*x + y*y", "0", "(w/2)^2 + (h/2)^2").resolution(1.5))
+
+#set($img = $Shapes.surface.image.src($surf).size(50,50).height(8).tool("3 ball"))
+
+#g($img.strategy("simple 0 alt").stepover(0))
+
+m2

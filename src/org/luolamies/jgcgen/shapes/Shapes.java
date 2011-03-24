@@ -38,12 +38,11 @@ public class Shapes {
 			this.pkg = pkg;
 		}
 		
-		@SuppressWarnings("unchecked")
-		public PathGenerator get(String generator) throws SecurityException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-			Class<? extends PathGenerator> c;
+		public Object get(String generator) throws SecurityException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
+			Class<?> c;
 			generator = Character.toUpperCase(generator.charAt(0)) + generator.substring(1).toLowerCase();
 			try {
-				c = (Class<? extends PathGenerator>) Class.forName(getClass().getPackage().getName() + "." + pkg + "." + generator);
+				c = (Class<?>) Class.forName(getClass().getPackage().getName() + "." + pkg + "." + generator);
 			} catch (ClassNotFoundException e) {
 				throw new RenderException("Shape \"" + generator + "\" not found in package " + pkg);
 			}

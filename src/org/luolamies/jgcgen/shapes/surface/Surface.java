@@ -27,7 +27,7 @@ public abstract class Surface {
 	abstract public double getDepthAt(double x, double y);
 	
 	/**
-	 * Set the target size. This usually sets the scaling factors for finite surfaces.
+	 * Set the target size. This should be called before using the surface. 
 	 * @param width the target width
 	 * @param height the target height
 	 * @param depth the target depth

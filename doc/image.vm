@@ -3,6 +3,7 @@
 <p>The image converter has the following methods:</p>
 <dl class="methods">
 <dt>file("filename")</dt><dd>The path to the input file.</dd>
+<dt>src(<var>surface</var>)</dt><dd>The surface to use as a input. An alternative to <code>file</code>.</dd>
 <dt>invert()</dt><dd>Invert the image.</dd>
 <dt>normalize()</dt><dd>Remap the value scale so the darkest pixel becomes black and the lightest white.</dd>
 <dt>flip()</dt><dd>Flip the image upside down</dd>

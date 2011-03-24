@@ -1,0 +1,23 @@
+#define($main)
+<p>In addition to heightmap images, JGCGen also supports parametric surfaces. In this case, the Z coordinate for point (x,y) is defined by an equation.</p>
+<p>To get define a surface, use <code>\$Shapes.surface.parametric</code>. A surface object has the following methods:
+</p>
+<dl class="methods">
+<dt class="required">f(<var>"expression"</var>, [<var>"0"</var>], [<var>"1"</var>])</dt>
+<dd>Set the function that defines the surface. The second and third parameters set the bounds for the function's value. If not set properly, the surface will not be scaled correctly and may be truncated!</dd>
+<dt>resolution(<var>res</var>)</dt>
+<dd>The sampling resolution. The smaller the value, the higher the resolution.</dd>
+</dl>
+
+<p>A surface can be used as it is (e.g. for projecting paths) or it can be used as input for image carving. When not using together with <a href="image.html">image</a>, make sure to call <code>setTargetSize(<var>width</var>, <var>height</var>, <var>depth</var>)</code> to initialize it before use!</p>
+
+<p>In addition to the usual mathematical constants (e.g. <code>pi</code>), the following variables can be used in an expression:</p>
+<ul>
+<li>x &ndash; current X coordinate</li>
+<li>y &ndash; current Y coordinate</li>
+<li>w &ndash; the target width</li>
+<li>h &ndash; the target height</li>
+<li>d &ndash; the target depth</li>
+</ul>
+#end
+#parse("base.tpl")

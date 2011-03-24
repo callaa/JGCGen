@@ -25,8 +25,8 @@ public class Image implements PathGenerator {
 	private double width, height;
 	private double dstepover;
 	
-	private ImageData imgcache;
-	
+	private Surface imgcache;
+
 	/**
 	 * Get the configured tool
 	 * @return tool
@@ -57,6 +57,18 @@ public class Image implements PathGenerator {
 	}
 	
 	/**
+	 * Set image from a surface
+	 * @param surface
+	 * @return
+	 */
+	public Image src(Surface surface) {
+		filename = null;
+		imgcache = surface;
+		System.err.println("imgcache set " + surface);
+		return this;
+	}
+	
+	/**
 	 * Set the image origin (topleft coordinate)
 	 * @param origin
 	 * @return this
@@ -82,7 +94,8 @@ public class Image implements PathGenerator {
 	 * @return
 	 */
 	public Image invert() {
-		imgcache = null;
+		if(filename!=null)
+			imgcache = null;
 		invert = !invert;
 		return this;
 	}
@@ -92,7 +105,8 @@ public class Image implements PathGenerator {
 	 * @return
 	 */
 	public Image normalize() {
-		imgcache = null;
+		if(filename!=null)
+			imgcache = null;
 		normalize = true;
 		return this;
 	}
@@ -102,7 +116,8 @@ public class Image implements PathGenerator {
 	 * @return
 	 */
 	public Image flip() {
-		imgcache = null;
+		if(filename!=null)
+			imgcache = null;
 		flip = !flip;
 		return this;
 	}
@@ -112,7 +127,8 @@ public class Image implements PathGenerator {
 	 * @return
 	 */
 	public Image mirror() {
-		imgcache = null;
+		if(filename!=null)
+			imgcache = null;
 		mirror = !mirror;
 		return this;
 	}
@@ -122,7 +138,8 @@ public class Image implements PathGenerator {
 	 * @return
 	 */
 	public Image rotate() {
-		imgcache = null;
+		if(filename!=null)
+			imgcache = null;
 		rotate = !rotate;
 		return this;
 	}
@@ -148,7 +165,8 @@ public class Image implements PathGenerator {
 			throw new IllegalArgumentException("Dimensions must be greater than zero!");
 		this.xsize = x;
 		this.ysize = y;
-		imgcache = null;
+		if(filename!=null)
+			imgcache = null;
 		return this;
 	}
 	
@@ -262,6 +280,11 @@ public class Image implements PathGenerator {
 				width = ysize / imgcache.getAspectRatio();
 				height = ysize;
 			}
+		} else if(filename==null) {
+			// Initialize external surface
+			imgcache.setTargetSize(xsize, ysize, zscale);
+			width = xsize;
+			height = ysize;
 		}
 		
 		return imgcache;
@@ -271,8 +294,8 @@ public class Image implements PathGenerator {
 		if(tool==null)
 			throw new RenderException("Tool not set!");
 		
-		if(filename==null)
-			throw new RenderException("Input file not set!");
+		if(filename==null && imgcache==null)
+			throw new RenderException("Input file or source surface not set!");
 		
 		// Select carving strategy
 		ImageStrategy is;

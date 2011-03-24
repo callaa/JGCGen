@@ -28,6 +28,7 @@
 #navi("outline", "Outlines")
 #navi("pocket", "Pockets")
 #navi("image", "Images")
+#navi("surfaces", "Surfaces")
 #navi("samples", "Samples")
 </ul>
 
