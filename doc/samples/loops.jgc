@@ -1,0 +1,66 @@
+#boilerplate
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+$passdepth = 3
+
+#parse("jgc_loops")
+
+f600
+
+(Make multiple passes with jgc_loop)
+#<depth> = -1
+g0 x0y0z5
+g1 z0
+#@jgc_loop("#1", "0", "#<depth>", "-0.3")
+g1 z#1
+	x5
+	x0y5
+	y0
+#end
+g0 z5
+
+(Make a stairstep with jgc_loop. Since start and end positions are not)
+(variables here, the generated code should be a little cleaner)
+g0 x10
+g1 z0
+#<incr> = 1
+#@jgc_loop("#1", "0", "10", "#<incr>")
+g1 
+	x[10+#1]
+	y#1
+#end
+g0 z10
+
+g0 y0x20
+g1 z0
+#@jgc_loop("#1", "0", "-10", "-#<incr>")
+g1 
+	x[20+#1]
+	y#1
+#end
+g0 z10
+
+(Panelization)
+#@jgc_panelize("#1", "#2", "5", "3")
+g00 x[30+#1*10] y[#2*10]
+g01 z0
+g91
+g01	x8y8
+g00 z2
+	y-8
+	z-2
+g01 x-8y8
+g90
+g0 z10
+#end
+
+(Packed panelization)
+
+#@jgc_hexpanelize("#1", "#2", "10", "10", "5", "3")
+#g($Shapes.outline.polygon.radius(5).sides(6).toPath().offset("x[35+#1]y[-10-#2]"), "-5")
+#end
+
+m2
+

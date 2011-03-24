@@ -34,7 +34,7 @@ public class IncludeHandler implements IncludeEventHandler {
 	public String includeEvent(String resource, String path, String directive) {
 		int dot = resource.lastIndexOf('.');
 		if(dot<0)
-			resource = resource + ".vm";
+			resource = resource + ".jgc";
 		
 		if(resource.startsWith("jgc_"))
 			resource = "/velocity/" + resource;

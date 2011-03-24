@@ -22,6 +22,7 @@
 <ul id="navilist">
 #navi("index", "Introduction")
 #navi("dir", "Directives")
+#navi("macros", "Macros")
 #navi("vars", "Variables")
 #navi("path", "Paths")
 #navi("font", "Fonts")

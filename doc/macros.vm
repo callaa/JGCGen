@@ -1,0 +1,20 @@
+#define($main)
+<p>JGCGen comes bundled with ready made macros for various tasks. To use them,
+include the definitions with <code>\#parse(<var>"macrolibrary"</var>)</code>, where <i>macrolibrary</i> is the name of the macro library, e.g. "jgc_loops".</p>
+
+<h2>jgc_loop</h2>
+<p>The loop library contains macros for various looping tasks.</p>
+
+<h3>jgc_loop(<var>"var"</var>, <var>"start"</var>, <var>"end"</var>, <var>"step"</var>)</h3>
+<p>This generates a looping construct around the macro body that goes from "start"+"incr" up to "end". This is commonly used for doing a deep cut in multiple passes. "var" is the variable for the loop. Variables are allowed in "start", "end" and "step" too.</p>
+
+<h3>jgc_panelize(<var>"xvar"</var>,<var>"yvar"</var>,<var>"xcount"</var>,<var>"ycount"</var>)</h3>
+<p>Loop the macro body "xcount" * "ycount" times. The loop counters will be available in "xvar" and "yvar". Variables are allowed in "xcount" and "ycount".</p>
+
+<h3>jgc_hexpanelize(<var>"xvar"</var>,<var>"yvar"</var>,<var>"xsize"</var>, <var>"ysize"</var>, <var>"xcount"</var>,<var>"ycount"</var>)</h3>
+<p>This works much like jgc_panelize, except it generates a hexagonal packing
+which makes more efficient use of material if you part fits within a hexagonal
+outline.</p>
+
+#end
+#parse("base.tpl")

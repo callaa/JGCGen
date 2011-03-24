@@ -1,0 +1,68 @@
+## Loop until /var/ reaches /to/, starting at /from+incr/ with an increment of /incr/
+#macro(jgc_loop, $var, $from, $to, $incr)
+$var = $from
+#if($Math.isNumber($from) and $Math.isNumber($to))
+## We know both from and to: we can generate cleaner code
+#if($Math.number($from) < $Math.number($to))
+#o("while", "$var lt $to")
+	$var = [$var + $incr]
+	#o("if", "$var gt $to")
+		$var = $to
+	#end
+	$!bodyContent
+#end
+#else
+#o("while", "$var gt $to")
+	$var = [$var + $incr]
+	#o("if", "$var lt $to")
+		$var = $to
+	#end
+	$!bodyContent
+#end
+#end
+#else
+## From and/or to are variables.
+#o("while", "[$from lt $to and $var lt $to] or [$from gt $to and $var gt $to]")
+
+	$var = [$var + $incr]
+	#o("if", "[$from lt $to and $var gt $to] or [$from gt $to and $var lt $to]")
+		$var = $to
+	#end
+	$!bodyContent
+#end
+#end
+#end
+
+###############################################################################
+
+## Repeat content xcount * ycount times
+#macro(jgc_panelize, $xvar, $yvar, $xcount, $ycount)
+$yvar = 0
+#o("repeat", $ycount)
+$xvar = 0
+#o("repeat", $xcount)
+$!bodyContent
+
+$xvar = [$xvar + 1]
+#end
+$yvar = [$yvar + 1]
+#end
+#end
+
+###############################################################################
+
+## Repeat content xcount * ycount times with hexagonal tiling
+#macro(jgc_hexpanelize, $xvar, $yvar, $xsize, $ysize, $xcount, $ycount)
+$yvar = 0
+#<jgc_hexpanelize> = 0
+#o("repeat" "$ycount")
+$xvar = [#<jgc_hexpanelize> * $xsize / 2]
+#o("repeat", "[$xcount - #<jgc_hexpanelize>]")
+$!bodyContent
+
+$xvar = [$xvar + $xsize]
+#end
+#<jgc_hexpanelize> = [1 - #<jgc_hexpanelize>]
+$yvar = [$yvar + $ysize]
+#end
+#end

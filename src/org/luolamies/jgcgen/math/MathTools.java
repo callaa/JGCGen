@@ -15,5 +15,27 @@ public class MathTools {
 	static public Iterable<Double> range(double from, double to, double step) {
 		return new Range(from, to, step);
 	}
+
+	/**
+	 * Is the given string a number?
+	 * @param str
+	 * @return true if string is a valid number
+	 */
+	static public boolean isNumber(String str) {
+		try {
+			Double.parseDouble(str);
+		} catch(NumberFormatException e) {
+			return false;
+		}
+		return true;
+	}
 	
+	/**
+	 * Convert the string to a number
+	 * @param str
+	 * @return number
+	 */
+	static public double number(String str) {
+		return Double.parseDouble(str);
+	}
 }

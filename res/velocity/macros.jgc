@@ -1,0 +1,6 @@
+## Built-in macros
+## These are always included
+
+#macro(boilerplate)
+#parse("jgc_header")
+#end
