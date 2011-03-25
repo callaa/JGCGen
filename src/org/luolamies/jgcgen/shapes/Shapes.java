@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.luolamies.jgcgen.RenderException;
-import org.luolamies.jgcgen.path.PathGenerator;
+import org.luolamies.jgcgen.path.Path;
 
 /**
  * Get various path generators.
@@ -70,5 +70,13 @@ public class Shapes {
 		pkgcache.put(pkg, sp);
 		
 		return sp;
+	}
+	
+	/**
+	 * Get an empty path
+	 * @return path
+	 */
+	public Path getNewPath() {
+		return new Path();
 	}
 }
