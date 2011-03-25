@@ -93,8 +93,11 @@ public class Path implements PathGenerator {
 	 * Add another path to this path. A seam is automaticallý added to the intersection.
 	 * @param path path to add
 	 */
-	public void addPath(Path path) {
-		if(path==null || path.getSize()==0)
+	public void addPath(PathGenerator pathg) {
+		if(pathg==null)
+			return;
+		Path path = pathg.toPath();
+		if(path.getSize()==0)
 			return;
 		
 		boolean addseam = !segments.isEmpty() &&
