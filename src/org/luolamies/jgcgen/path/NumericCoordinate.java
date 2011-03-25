@@ -93,6 +93,9 @@ public final class NumericCoordinate extends Coordinate {
 		Double d = axes.get(axis);
 		if(d==null)
 			return null;
+		// normalize
+		if(Math.abs(d) < 0.001)
+			d = 0.0;
 		return String.format("%.3f", d);
 	}
 	

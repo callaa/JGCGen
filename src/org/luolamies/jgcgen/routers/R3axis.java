@@ -123,6 +123,10 @@ public class R3axis extends Router {
 				out.write(safez.toGcode());
 				out.write("\n\t");
 				out.write(firstpoint.toGcode());
+				if(nearz!=null) {
+					out.write("\n\t");
+					out.write(nearz.toGcode());
+				}
 				out.write('\n');
 			}
 			
@@ -158,9 +162,7 @@ public class R3axis extends Router {
 					out.write("\n\t");
 					out.write(s.point.undefined(Axis.Z).toGcode());
 					out.write('\n');
-				} else
-					skipfirstrapid = false;
-				firstrapid = false;
+				}
 				
 				Path.Segment targ;
 				// If a Z value is defined for the move, use it.
@@ -172,7 +174,7 @@ public class R3axis extends Router {
 				if(targ!=null) {
 					// Plunge down to target depth
 					// If near_z is not the same as safe_z, rapid there first
-					if(nearz!=null) {
+					if(!skipfirstrapid && nearz!=null) {
 						out.write("G00 ");
 						out.write(nearz.toGcode());
 						out.write('\n');
@@ -193,6 +195,7 @@ public class R3axis extends Router {
 					out.write('\n');
 					fplungeset=true;
 				}
+				firstrapid = false;
 				break;
 			// Dab down
 			case POINT:
