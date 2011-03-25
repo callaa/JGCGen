@@ -37,14 +37,16 @@ $var = $from
 
 ## Repeat content xcount * ycount times
 #macro(jgc_panelize, $xvar, $yvar, $xcount, $ycount)
+#<jgc_panelize> = 0
 $yvar = 0
 #o("repeat", $ycount)
-$xvar = 0
+$xvar = [$xcount * #<jgc_panelize> - #<jgc_panelize>]
 #o("repeat", $xcount)
 $!bodyContent
 
-$xvar = [$xvar + 1]
+$xvar = [$xvar + 1 - [2 * #<jgc_panelize>]]
 #end
+#<jgc_panelize> = [1 - #<jgc_panelize>]
 $yvar = [$yvar + 1]
 #end
 #end
@@ -56,13 +58,14 @@ $yvar = [$yvar + 1]
 $yvar = 0
 #<jgc_hexpanelize> = 0
 #o("repeat" "$ycount")
-$xvar = [#<jgc_hexpanelize> * $xsize / 2]
+$xvar = [#<jgc_hexpanelize> * [$xsize * [$xcount - 1] - $xsize / 2]]
 #o("repeat", "[$xcount - #<jgc_hexpanelize>]")
 $!bodyContent
 
-$xvar = [$xvar + $xsize]
+$xvar = [$xvar + $xsize - [#<jgc_hexpanelize> * 2 * $xsize]]
 #end
 #<jgc_hexpanelize> = [1 - #<jgc_hexpanelize>]
 $yvar = [$yvar + $ysize]
 #end
 #end
+
