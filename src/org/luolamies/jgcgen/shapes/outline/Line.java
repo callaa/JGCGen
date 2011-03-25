@@ -66,16 +66,22 @@ public class Line implements PathGenerator {
 		if(z0!=null) {
 			path.addSegment(Path.SType.MOVE, a.offset(new NumericCoordinate(null, null, z0), false, true));	
 			double z = z0;
+			boolean incomplete=false;
 			while(z>z1) {
 				z -= dz;
 				if(z<z1)
 					z = z1;
 				path.addSegment(Path.SType.LINE, b.offset(new NumericCoordinate(null, null, z), false, true));
+				
+				incomplete = z>z1;
 				z -= dz;
 				if(z<z1)
 					z = z1;
 				path.addSegment(Path.SType.LINE, a.offset(new NumericCoordinate(null, null, z), false, true));
 			}
+			if(incomplete)
+				path.addSegment(Path.SType.LINE, b.offset(new NumericCoordinate(null, null, z), false, true));
+			
 		} else {
 			path.addSegment(Path.SType.MOVE, a);
 			path.addSegment(Path.SType.LINE, b);

@@ -13,7 +13,7 @@ $passdepth = 2
 
 #g($line.from("x30y0").to("x40y5").depth(0, -5, -0.5))
 
-#g($line.from("x45y0").to("x60y5").depth(-5, -10, -0.5))
+#g($line.from("x45y0").to("x60y5").depth(-5, -10, -0.8))
 
 
 m2
