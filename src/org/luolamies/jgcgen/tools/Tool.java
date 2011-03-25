@@ -8,7 +8,7 @@ public abstract class Tool {
 	 * Format is: <code><var>dia</var> <var>type</var> [<var>options</var>].
 	 * <p>
 	 * Currently supported types are <i>flat</i>, <i>ball</i> and <i>v</i>.
-	 * V takes an angle as a paremeter.
+	 * V takes an angle as a parameter.
 	 * @param def
 	 * @return tool
 	 */
@@ -19,6 +19,8 @@ public abstract class Tool {
 			return new Endmill(dia);
 		else if("ball".equalsIgnoreCase(d[1]))
 			return new Ballnose(dia);
+		else if("v".equalsIgnoreCase(d[1]))
+				return new Vbit(dia, Double.parseDouble(d[2]));
 		else
 			throw new IllegalArgumentException("Unsupported tool type \"" + d[0] + '"');
 	}
