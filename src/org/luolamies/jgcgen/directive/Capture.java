@@ -27,12 +27,13 @@ import org.apache.velocity.runtime.directive.Directive;
 import org.apache.velocity.runtime.parser.node.Node;
 import org.luolamies.jgcgen.RenderException;
 import org.luolamies.jgcgen.path.Coordinate;
+import org.luolamies.jgcgen.path.NumericCoordinate;
 import org.luolamies.jgcgen.path.Path;
 
 /**
  * Capture a path as a variable.
  * <p>Usage:
- * <pre><code> #capture($var)
+ * <pre><code> #capture($var, ["relative"])
  * G00 X0 Y0
  * G01 X10 Y0...
  * 		Y-10...
@@ -58,15 +59,27 @@ public class Capture extends Directive {
 		// Get the name of the variable in which to store the pat
 		String var = node.jjtGetChild(0).literal().substring(1);
 		
+		// Get options
+		String opts="";
+		if(node.jjtGetNumChildren()==3)
+			opts = (String)node.jjtGetChild(1).value(ctx);
+		
+		boolean relative = false;
+		if("relative".equals(opts))
+			relative = true;
+		
 		// Render block contents into a buffer
 		StringWriter buffer = new StringWriter();
-		node.jjtGetChild(1).render(ctx, buffer);
+		node.jjtGetChild(node.jjtGetNumChildren()-1).render(ctx, buffer);
 		
 		// Parse buffer and extract path
 		Path path = new Path();
 		BufferedReader codes = new BufferedReader(new StringReader(buffer.toString()));
 		String line;
 		Path.SType lasttype=null;
+		
+		NumericCoordinate prev = new NumericCoordinate(0.0,0.0,0.0);
+		
 		while((line=codes.readLine())!=null) {
 			line = line.trim().toUpperCase();
 			if(line.length()==0)
@@ -91,6 +104,12 @@ public class Capture extends Directive {
 				skip=0;
 			}
 			Coordinate c = type!=Path.SType.SEAM ? Coordinate.parse(line.substring(skip)) : null;
+			if(relative) {
+				if(!(c instanceof NumericCoordinate))
+					throw new RenderException("Only numeric coordinates supported in relative mode!");
+				c = prev.offset(c);
+				prev = (NumericCoordinate)c;
+			}
 			path.addSegment(type, c);
 			lasttype = type;
 		}
