@@ -24,7 +24,31 @@ public class Rectangle implements PathGenerator {
 	};
 	
 	/**
-	 * Set rectangle position by corners
+	 * Set rectangle position
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Rectangle pos(double x, double y) {
+		this.x = x;
+		this.y = y;
+		return this;
+	}
+	
+	/**
+	 * Set rectangle size
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Rectangle size(double w, double h) {
+		this.w = w;
+		this.h = h;
+		return this;
+	}
+	
+	/**
+	 * Set rectangle position and size by corners
 	 * @param x
 	 * @param y
 	 * @param w
@@ -209,7 +233,7 @@ public class Rectangle implements PathGenerator {
 					path.addSegment(Path.SType.LINE, new NumericCoordinate(x1, yy, null));
 					path.addSegment(Path.SType.LINE, new NumericCoordinate(x0, yy, null));
 					if(j<h)
-						path.addSegment(Path.SType.LINE, new NumericCoordinate(x0, Math.min(h, yy+stepover), null));
+						path.addSegment(Path.SType.LINE, new NumericCoordinate(x0, Math.min(y0+h, yy+stepover), null));
 				}
 			}
 		} else {
@@ -246,7 +270,7 @@ public class Rectangle implements PathGenerator {
 					path.addSegment(Path.SType.LINE, new NumericCoordinate(xx, y1, null));
 					path.addSegment(Path.SType.LINE, new NumericCoordinate(xx, y0, null));
 					if(j<w)
-						path.addSegment(Path.SType.LINE, new NumericCoordinate(Math.min(w, xx+stepover), y0, null));
+						path.addSegment(Path.SType.LINE, new NumericCoordinate(Math.min(x0+w, xx+stepover), y0, null));
 				}
 			}
 		}
