@@ -34,6 +34,11 @@ public final class SymbolicCoordinate extends Coordinate {
 		this.axes = axes;
 	}
 	
+	private SymbolicCoordinate(SymbolicCoordinate copy) {
+		this();
+		axes.putAll(copy.axes);
+	}
+	
 	public SymbolicCoordinate() {
 		axes = new EnumMap<Axis, String>(Axis.class);
 	}
@@ -138,6 +143,31 @@ public final class SymbolicCoordinate extends Coordinate {
 		for(Axis a : axes.keySet())
 			c.put(a, "[[" + axes.get(a) + "]*" + scale + ']');
 		return new SymbolicCoordinate(c);
+	}
+
+	public SymbolicCoordinate rotate(Coordinate angle) {
+		SymbolicCoordinate rotated = new SymbolicCoordinate(this);
+		
+		rotate(rotated, Axis.Y, Axis.Z, angle.get(Axis.X));
+		rotate(rotated, Axis.X, Axis.Z, angle.get(Axis.Y));
+		rotate(rotated, Axis.X, Axis.Y, angle.get(Axis.Z));
+		
+		return rotated;
+	}
+	
+	static private void rotate(SymbolicCoordinate c, Axis a, Axis b, String theta) {
+		if(theta==null)
+			return;
+		
+		String x = c.get(a);
+		if(x==null)
+			x = "0";
+		String y = c.get(b);
+		if(y==null)
+			y = "0";
+		
+		c.set(a, "[[" + x + "] * COS[" + theta + "] - [" + y + "] * SIN[" + theta + "]]");
+		c.set(b, "[[" + x + "] * SIN[" + theta + "] + [" + y + "] * COS[" + theta + "]]");
 	}
 
 }

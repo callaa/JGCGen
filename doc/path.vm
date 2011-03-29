@@ -26,6 +26,9 @@
 <dt>path.getDimension(axis)</dt><dd>Calculate the dimension of the path on the given axis. The path must be numeric.</dd>
 <dt>path.getSize()</dt><dd>Get the number of segments in the path.</dd>
 <dt>path.offset(coordinates)</dt><dd>Add an offset to the path coordinates.</dd>
+<dd>path.scale(scale)</dt><dd>Scale the path. Scale can be a numeric value such as "2.0" in which case all axes are scaled uniformly. You can also specify different scaling factors for each axis, e.g. "x2.0 y0.5".</dd>
+<dt>path.rotate(angle)</dt>
+<dd>Rotate the path around origin. For example, "z45.0" will rotate the path 45&deg; around the Z axis.</dd>
 <dt>path.splitAtSeams()</dt><dd>Return a list of paths that were separated by SEAMs.</dd>
 </dl>
 <p>Note! All the methods that modify the path (except for addSegment) return a new path with the modifications, leaving the original untouched!</p>

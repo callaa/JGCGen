@@ -278,6 +278,13 @@ public abstract class Coordinate {
 	}
 	
 	/**
+	 * Rotate the coordinate around origin (0).
+	 * @param angle angles around axes to rotate
+	 * @return rotated coordinate
+	 */
+	public abstract Coordinate rotate(Coordinate angle);
+	
+	/**
 	 * Convert this coordinate set to G-code.
 	 * E.g. If X and Y coordinates are set, this might produce
 	 * <kbd>X10.20 Y4.01</kbd>

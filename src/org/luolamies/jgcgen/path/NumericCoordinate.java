@@ -19,6 +19,8 @@ package org.luolamies.jgcgen.path;
 import java.util.EnumMap;
 import java.util.Map;
 
+import org.luolamies.jgcgen.RenderException;
+
 /**
  * Numeric coordinates.
  * <p>A numeric coordinates value is known at "compile time"
@@ -29,6 +31,11 @@ public final class NumericCoordinate extends Coordinate {
 
 	private NumericCoordinate(EnumMap<Axis, Double> axes) {
 		this.axes = axes;
+	}
+	
+	private NumericCoordinate(NumericCoordinate copy) {
+		this();
+		axes.putAll(copy.axes);
 	}
 	
 	/**
@@ -194,5 +201,36 @@ public final class NumericCoordinate extends Coordinate {
 
 	protected Coordinate scaleSymbolic(String scale) {
 		return toSymbolic().scaleSymbolic(scale);
+	}
+
+	public Coordinate rotate(Coordinate angle) {
+		if(angle instanceof SymbolicCoordinate)
+			return toSymbolic().rotate(angle);
+		NumericCoordinate a = (NumericCoordinate)angle;
+		
+		NumericCoordinate rotated = new NumericCoordinate(this);
+		
+		rotate(rotated, Axis.Y, Axis.Z, a.getValue(Axis.X));
+		rotate(rotated, Axis.X, Axis.Z, a.getValue(Axis.Y));
+		rotate(rotated, Axis.X, Axis.Y, a.getValue(Axis.Z));
+		
+		return rotated;
+	}
+	
+	static private void rotate(NumericCoordinate c, Axis a, Axis b, Double theta) {
+		if(theta==null)
+			return;
+		theta = Math.toRadians(theta);
+		double st = Math.sin(theta);
+		double ct = Math.cos(theta);
+		
+		Double x = c.getValue(a);
+		Double y = c.getValue(b);
+		if(x==null)
+			x = 0.0;
+		if(y==null)
+			y = 0.0;
+		c.set(a, x * ct - y * st);
+		c.set(b, x * st + y * ct);
 	}
 }

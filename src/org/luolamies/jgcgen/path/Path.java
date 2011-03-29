@@ -188,6 +188,23 @@ public class Path implements PathGenerator {
 	}
 	
 	/**
+	 * Get a rotated version of this path. The path is rotated around the origin (0).
+	 * @param rotation
+	 * @return rotated path
+	 */
+	public Path rotate(String rotation) {
+		Coordinate r = Coordinate.parse(rotation);
+		Path op = new Path();
+		for(Segment s : segments) {
+			if(s.point!=null)
+				op.segments.add(new Segment(s.type, s.point.rotate(r)));
+			else
+				op.segments.add(s);
+		}
+		return op;
+	}
+	
+	/**
 	 * Get the dimension of the path on the given axis
 	 * @param axis
 	 * @return dimension
