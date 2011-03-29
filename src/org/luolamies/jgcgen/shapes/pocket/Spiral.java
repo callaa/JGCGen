@@ -13,7 +13,7 @@ import org.luolamies.jgcgen.path.PathGenerator;
  */
 public class Spiral implements PathGenerator {
 	private Double radius;
-	private Double tooldia;
+	private Double stepover;
 	private NumericCoordinate origin = new NumericCoordinate(0.0, 0.0, null);
 	/**
 	 * Set the pocket radius
@@ -28,14 +28,14 @@ public class Spiral implements PathGenerator {
 	}
 	
 	/**
-	 * Set the diamater of the tool.
+	 * Set the stepover
 	 * @param radius
 	 * @return this
 	 */
-	public Spiral tool(double dia) {
+	public Spiral stepover(double dia) {
 		if(dia<=0)
-			throw new IllegalArgumentException("Tool diameter must be greater than zero!");
-		this.tooldia = dia;
+			throw new IllegalArgumentException("Stepover must be greater than zero!");
+		this.stepover = dia;
 		return this;
 	}
 	
@@ -57,23 +57,22 @@ public class Spiral implements PathGenerator {
 	public Path toPath() {
 		if(radius==null)
 			throw new RenderException("Pocket radius not set!");
-		if(tooldia==null)
-			throw new RenderException("Tool diameter not set!");
-		if(tooldia > radius*2)
-			throw new RenderException("Tool diameter is greater than pocket diameter!");
+		if(stepover==null)
+			throw new RenderException("Stepveer not set!");
+		if(stepover > radius*2)
+			throw new RenderException("Stepver is greater than pocket radius!");
 		
 		Path path = new Path();
 		final double ox = origin.getValue(Axis.X);
 		final double oy = origin.getValue(Axis.Y);
 		final Double oz = origin.getValue(Axis.Z);
-		final double tr = tooldia/2.0;
 		
 		NumericCoordinate point = new NumericCoordinate(ox, oy, oz);
 		path.addSegment(Path.SType.MOVE, point);
 		double r=0,rr=0;
 		while(r<radius) {
 			rr=r;
-			r += tr;
+			r += stepover;
 			if(r>radius)
 				r = radius;
 			point = new NumericCoordinate(ox-r, oy, null);
@@ -81,7 +80,7 @@ public class Spiral implements PathGenerator {
 			path.addSegment(Path.SType.CWARC, point);
 			
 			rr = r;
-			r += tr;
+			r += stepover;
 			if(r>radius)
 				r = radius;
 			point = new NumericCoordinate(ox+r, oy, null);
