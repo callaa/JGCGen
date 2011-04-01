@@ -19,7 +19,9 @@ package org.luolamies.jgcgen.path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.luolamies.jgcgen.RenderException;
 
@@ -66,7 +68,15 @@ public class Path implements PathGenerator {
 		}
 	}
 	
-	private List<Segment> segments = new ArrayList<Segment>();
+	private List<Segment> segments;
+	
+	public Path() {
+		segments = new ArrayList<Segment>();
+	}
+	
+	private Path(List<Segment> segments) {
+		this.segments = segments;
+	}
 	
 	/**
 	 * Add a new segment
@@ -311,6 +321,44 @@ public class Path implements PathGenerator {
 		for(Segment s : segments)
 			System.err.println("\t" + s);
 		return this;
+	}
+	
+	/**
+	 * Subdivide the path until it is made up of segments no more than <i>min</i> long.
+	 * <p>Note. Currently only linear moves (G01) are subdivided.
+	 * @param min
+	 * @return
+	 */
+	public Path subdivide(double min) {
+		if(segments.isEmpty())
+			return this;
+		
+		LinkedList<Segment> seg = new LinkedList<Segment>();
+		seg.addAll(segments);
+		
+		ListIterator<Segment> li = seg.listIterator();
+		Segment prev = li.next();
+		
+		while(li.hasNext()) {
+			Segment s = li.next();
+			if(prev.point!=null && s.point!=null && s.type == SType.LINE) {
+				double d = ((NumericCoordinate)prev.point).distance((NumericCoordinate)s.point);
+				if(d>min) {
+					NumericCoordinate mid = new NumericCoordinate(
+							(((NumericCoordinate)s.point).getValue(Axis.X, 0) - ((NumericCoordinate)prev.point).getValue(Axis.X, 0))/2,
+							(((NumericCoordinate)s.point).getValue(Axis.Y, 0) - ((NumericCoordinate)prev.point).getValue(Axis.Y, 0))/2,
+							(((NumericCoordinate)s.point).getValue(Axis.Z, 0) - ((NumericCoordinate)prev.point).getValue(Axis.Z, 0))/2
+							); 
+					li.previous();
+					li.add(new Segment(SType.LINE, prev.point.offset(mid)));
+					li.previous();
+				} else
+					prev = s;
+			} else
+				prev = s;
+		}
+		
+		return new Path(seg);
 	}
 
 	/**

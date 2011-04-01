@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.velocity.VelocityContext;
 import org.luolamies.jgcgen.RenderException;
 import org.luolamies.jgcgen.path.Path;
 
@@ -56,6 +57,12 @@ public class Shapes {
 	}
 	
 	static private Map<String,ShapePackage> pkgcache = new HashMap<String, ShapePackage>();
+	
+	public final VelocityContext ctx;
+	
+	public Shapes(VelocityContext ctx) {
+		this.ctx = ctx;
+	}
 	
 	/**
 	 * Get a shape generator package

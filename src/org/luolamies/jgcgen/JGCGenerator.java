@@ -252,7 +252,7 @@ public class JGCGenerator {
 		}
 		
 		ctx.put("Routers", new Routers(ctx));
-		ctx.put("Shapes", new Shapes());
+		ctx.put("Shapes", new Shapes(ctx));
 		ctx.put("Fonts", new Fonts(new File(".")));
 		ctx.put("Math", MathTools.class);
 		ctx.put("Import", Importer.class);

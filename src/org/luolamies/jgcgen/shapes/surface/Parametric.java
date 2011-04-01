@@ -2,9 +2,12 @@ package org.luolamies.jgcgen.shapes.surface;
 
 import org.apache.velocity.exception.ParseErrorException;
 import org.luolamies.jgcgen.RenderException;
+import org.luolamies.jgcgen.shapes.Shapes;
 import org.nfunk.jep.JEP;
 import org.nfunk.jep.Node;
 import org.nfunk.jep.ParseException;
+import org.nfunk.jep.SymbolTable;
+import org.nfunk.jep.Variable;
 
 /**
  * A parametric surface
@@ -12,13 +15,15 @@ import org.nfunk.jep.ParseException;
  */
 public class Parametric extends Surface {
 	private final JEP jep;
+	private final Shapes shapes;
 	private double resolution = 0.1;
 	private double zmin=0, zscale=1.0, maxz=1.0;
 	private String z0, z1;
 	private double xoff, yoff;
 	private Node jepnode;
 	
-	public Parametric() {
+	public Parametric(Shapes shapes) {
+		this.shapes = shapes;
 		jep = new JEP();
 		jep.addStandardFunctions();
 		jep.addStandardConstants();
@@ -90,16 +95,35 @@ public class Parametric extends Surface {
 	public void setTargetSize(double width, double height, double depth) {
 		xoff = -width / 2;
 		yoff = height / 2;
+
+		// Set dimension constants
+		jep.removeVariable("w"); jep.addConstant("w", width);
+		jep.removeVariable("h"); jep.addConstant("h", height);
+		jep.removeVariable("d"); jep.addConstant("d", depth);
 		
-		jep.addVariable("w", width);
-		jep.addVariable("h", height);
-		jep.addVariable("d", depth);
+		// Evaluate Z scaling expressions
+		Node znode0 = jep.parseExpression(z0);
+		Node znode1 = jep.parseExpression(z1);
+		
+		// Set velocity variables
+		SymbolTable symbols = jep.getSymbolTable();
+		for(Object key : symbols.keySet()) {
+			if(!"x".equals(key) && !"y".equals(key)) {
+				Variable var  = symbols.getVar((String)key);
+				if(!var.isConstant()) {
+					Object val = shapes.ctx.get(var.getName());
+					if(val==null || !(val instanceof Number))
+						throw new ParseErrorException("Variable \"" + var.getName() + "\" is not a number!");
+					var.setValue(val);
+				}
+			}
+		}
 		
 		// Calculate Z scaling		
 		double z1;
 		try {
-			this.zmin = (Double) jep.evaluate(jep.parseExpression(z0));
-			z1 = (Double) jep.evaluate(jep.parse(this.z1));
+			this.zmin = (Double) jep.evaluate(znode0);
+			z1 = (Double) jep.evaluate(znode1);
 		} catch(ParseException e) {
 			throw new RenderException("Couldn't parse function limits!", e);
 		}

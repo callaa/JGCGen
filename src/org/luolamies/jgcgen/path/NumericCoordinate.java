@@ -19,8 +19,6 @@ package org.luolamies.jgcgen.path;
 import java.util.EnumMap;
 import java.util.Map;
 
-import org.luolamies.jgcgen.RenderException;
-
 /**
  * Numeric coordinates.
  * <p>A numeric coordinates value is known at "compile time"
@@ -86,14 +84,30 @@ public final class NumericCoordinate extends Coordinate {
 	 * @return
 	 */
 	public double distance(NumericCoordinate to) {
-		double dx = getValue(Axis.X) - to.getValue(Axis.X);
-		double dy = getValue(Axis.Y) - to.getValue(Axis.Y);
-		double dz = getValue(Axis.Z) - to.getValue(Axis.Z);
+		double dx = getValue(Axis.X, 0.0) - to.getValue(Axis.X, 0.0);
+		double dy = getValue(Axis.Y, 0.0) - to.getValue(Axis.Y, 0.0);
+		double dz = getValue(Axis.Z, 0.0) - to.getValue(Axis.Z, 0.0);
 		return Math.sqrt(dx*dx + dy*dy + dz*dz);
 	}
 	
+	/**
+	 * Get the numeric value for the axis
+	 * @param axis
+	 * @return value or null if not defined
+	 */
 	public final Double getValue(Axis axis) {
 		return axes.get(axis);
+	}
+	
+	/**
+	 * Get the numeruc value for the axis
+	 * @param axis
+	 * @param def default value if axis is not defined
+	 * @return value or default
+	 */
+	public final Double getValue(Axis axis, double def) {
+		Double d = axes.get(axis);
+		return d!=null ? d : def;
 	}
 	
 	public String get(Axis axis) {
