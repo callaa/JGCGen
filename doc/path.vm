@@ -20,6 +20,8 @@
 <p>Path objects can be manipulated with the following methods:</p>
 <dl>
 <dt>path.addSegment(type, coords)</dt><dd>Add a new point to the path.</dd>
+<dt>path.addPath(path)</dt><dd>Add a another path to the end of this one. A <code>SEAM</code> is added in between.</dd>
+<dt>path.merge(path)</dt><dd>Add a another path to the end of this one. If the second path starts with a MOVE, it will be converted to a LINE.</dd>
 <dt>path.center(axes)</dt><dd>Center the path on the given axes. E.g. <code>path.center("xy")</code>. The path must be numeric.</dd>
 <dt>path.dump()</dt><dd>Print the path contents to stderr. Use this for debugging your script.</dd>
 <dt>path.flatten(axis)</dt><dd>Flatten the path on the given axis.</dd>

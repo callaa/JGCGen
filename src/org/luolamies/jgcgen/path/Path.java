@@ -19,6 +19,7 @@ package org.luolamies.jgcgen.path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -116,6 +117,23 @@ public class Path implements PathGenerator {
 		if(addseam)
 			segments.add(new Segment(SType.SEAM, null));
 		segments.addAll(path.segments);
+	}
+
+	public void merge(PathGenerator pathg) {
+		if(pathg==null)
+			return;
+		Path path = pathg.toPath();
+		if(path.getSize()==0)
+			return;
+		
+		Iterator<Segment> i = path.segments.iterator();
+		Segment s = i.next();
+		if(s.type==SType.MOVE) {
+			addSegment(SType.LINE, s.point);
+		} else
+			this.segments.add(s);
+		while(i.hasNext())
+			this.segments.add(i.next());
 	}
 	
 	public List<Segment> getSegments() {
