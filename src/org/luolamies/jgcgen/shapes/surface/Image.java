@@ -307,6 +307,10 @@ public class Image implements PathGenerator {
 			is = new RoughStrategy(this);
 		else if(strategy.startsWith("rough "))
 			is = new RoughStrategy(this, strategy.substring(6));
+		else if(strategy.equals("outline"))
+			is = new OutlineStrategy(this);
+		else if(strategy.startsWith("outline "))
+			is = new OutlineStrategy(this, strategy.substring(8));
 		else
 			throw new RenderException("Unknown strategy: " + strategy);
 
@@ -331,6 +335,6 @@ public class Image implements PathGenerator {
 		time = System.currentTimeMillis() - time;
 		JGCGenerator.getLogger().status(is.getClass().getSimpleName() + " finished. Took " + String.format("%.2f", time/1000.0) + " seconds.");
 		
-		return path.reduce();
+		return path;//.reduce();
 	}
 }

@@ -1,0 +1,13 @@
+#boilerplate
+#set($rapidnear = true)
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+
+(Demonstrate outline toolpaths)
+#set($img = $Shapes.surface.image.size(50,50).height(8).tool("3 ball").stepover("50%"))
+
+#g($img.file("suzanne.png").origin("x0y0").strategy("outline"))
+
+m2
