@@ -10,6 +10,8 @@ $passdepth = 3
 
 #set($shape = $Shapes.outline.rectangle.pos("-10", "10").size("20", "20").toPath())
 
+#set($rshape = $Shapes.outline.rectangle.round("3").pos("-10", "10").size("20", "20").toPath())
+
 (Untransformed)
 #g($shape, "0")
 
@@ -18,22 +20,34 @@ $passdepth = 3
 #g($shape.rotate("x45").offset("x30"), "0")
 #g($shape.rotate("y45").offset("x60"), "0")
 
+(Numeric rotations [round])
+#g($rshape.rotate("z45").offset("x-30"), "0")
+
 (Parametric rotations)
 #1 = 45
 #g($shape.rotate("z#1").offset("y-30"), "0")
 #g($shape.rotate("x#1").offset("x30y-30"), "0")
 #g($shape.rotate("y#1").offset("x60y-30"), "0")
 
+(Numeric rotations [round])
+#g($rshape.rotate("z#1").offset("x-30y-30"), "0")
+
 (Numeric scaling)
 #g($shape.scale("0.5").offset("y30"), "0")
 #g($shape.scale("x0.5").offset("y30x30"), "0")
 #g($shape.scale("y0.5").offset("y30x60"), "0")
+
+(Numeric scaling [round])
+#g($rshape.scale("0.5").offset("y30x-30"), "0")
 
 #1 = 0.5
 (Parametric scaling)
 #g($shape.scale("#1").offset("y60"), "0")
 #g($shape.scale("x#1").offset("y60x30"), "0")
 #g($shape.scale("y#1").offset("y60x60"), "0")
+
+(Parametric scaling [round])
+#g($rshape.scale("#1").offset("y60x-30"), "0")
 
 m2
 

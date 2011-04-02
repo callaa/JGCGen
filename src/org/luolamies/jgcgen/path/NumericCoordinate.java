@@ -196,12 +196,10 @@ public final class NumericCoordinate extends Coordinate {
 		if(scale instanceof SymbolicCoordinate)
 			return toSymbolic().scaleCoordinate(scale);
 		
-		EnumMap<Axis, Double> axes = new EnumMap<Axis, Double>(Axis.class);
+		EnumMap<Axis, Double> axes = new EnumMap<Axis, Double>(this.axes);
 		for(Axis a : this.axes.keySet()) {
 			if(scale.isDefined(a))
-				axes.put(a, this.axes.get(a) * ((NumericCoordinate)scale).getValue(a));
-			else
-				axes.put(a, this.axes.get(a));
+				axes.put(a, axes.get(a) * ((NumericCoordinate)scale).getValue(a));
 		}
 		return new NumericCoordinate(axes);
 	}
@@ -224,16 +222,30 @@ public final class NumericCoordinate extends Coordinate {
 		
 		NumericCoordinate rotated = new NumericCoordinate(this);
 		
-		rotate(rotated, Axis.Y, Axis.Z, a.getValue(Axis.X));
-		rotate(rotated, Axis.X, Axis.Z, a.getValue(Axis.Y));
-		rotate(rotated, Axis.X, Axis.Y, a.getValue(Axis.Z));
+		if(a.isDefined(Axis.X)) {
+			rotate(rotated, Axis.Y, Axis.Z, a.getValue(Axis.X));
+			// TODO support rotations in other than XY plane
+			//if(rotated.isDefined(Axis.J) || rotated.isDefined(Axis.K))
+			//	rotate(rotated, Axis.J, Axis.K, a.getValue(Axis.X));
+		}
+		
+		if(a.isDefined(Axis.Y)) {
+			rotate(rotated, Axis.X, Axis.Z, a.getValue(Axis.Y));
+			// TODO support rotations in other than XY plane
+			//if(rotated.isDefined(Axis.I) || rotated.isDefined(Axis.K))
+			//	rotate(rotated, Axis.I, Axis.K, a.getValue(Axis.Y));
+		}
+		
+		if(a.isDefined(Axis.Z)) {
+			rotate(rotated, Axis.X, Axis.Y, a.getValue(Axis.Z));
+			if(rotated.isDefined(Axis.I) || rotated.isDefined(Axis.J))
+				rotate(rotated, Axis.I, Axis.J, a.getValue(Axis.Z));
+		}
 		
 		return rotated;
 	}
 	
 	static private void rotate(NumericCoordinate c, Axis a, Axis b, Double theta) {
-		if(theta==null)
-			return;
 		theta = Math.toRadians(theta);
 		double st = Math.sin(theta);
 		double ct = Math.cos(theta);

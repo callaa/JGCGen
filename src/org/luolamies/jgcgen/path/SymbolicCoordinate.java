@@ -148,17 +148,30 @@ public final class SymbolicCoordinate extends Coordinate {
 	public SymbolicCoordinate rotate(Coordinate angle) {
 		SymbolicCoordinate rotated = new SymbolicCoordinate(this);
 		
-		rotate(rotated, Axis.Y, Axis.Z, angle.get(Axis.X));
-		rotate(rotated, Axis.X, Axis.Z, angle.get(Axis.Y));
-		rotate(rotated, Axis.X, Axis.Y, angle.get(Axis.Z));
+		if(angle.isDefined(Axis.X)) {
+			rotate(rotated, Axis.Y, Axis.Z, angle.get(Axis.X));
+			// TODO support rotations in other than XY plane
+			//if(rotated.isDefined(Axis.J) || rotated.isDefined(Axis.K))
+			//	rotate(rotated, Axis.J, Axis.K, a.get(Axis.X));
+		}
+		
+		if(angle.isDefined(Axis.Y)) {
+			rotate(rotated, Axis.X, Axis.Z, angle.get(Axis.Y));
+			// TODO support rotations in other than XY plane
+			//if(rotated.isDefined(Axis.I) || rotated.isDefined(Axis.K))
+			//	rotate(rotated, Axis.I, Axis.K, a.get(Axis.Y));
+		}
+		
+		if(angle.isDefined(Axis.Z)) {
+			rotate(rotated, Axis.X, Axis.Y, angle.get(Axis.Z));
+			if(rotated.isDefined(Axis.I) || rotated.isDefined(Axis.J))
+				rotate(rotated, Axis.I, Axis.J, angle.get(Axis.Z));
+		}
 		
 		return rotated;
 	}
 	
 	static private void rotate(SymbolicCoordinate c, Axis a, Axis b, String theta) {
-		if(theta==null)
-			return;
-		
 		String x = c.get(a);
 		if(x==null)
 			x = "0";
