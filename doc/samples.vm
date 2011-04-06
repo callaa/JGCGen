@@ -22,6 +22,7 @@
 #sample("outline_circle", "Circular outlines")
 #sample("outline_rect", "Rectangle outlines")
 #sample("outline_polygon", "Polygon outlines")
+#sample("outline_cut", "Outline cutting")
 #sample("pockets", "Various pockets")
 #sample("pocket_rect", "Rectangle pockets")
 #sample("capture", "How to create custom paths")

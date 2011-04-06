@@ -175,6 +175,17 @@ public class Path implements PathGenerator {
 	}
 	
 	/**
+	 * Is this a closed path? I.e. are the XY coordinates of the first and last point the same?
+	 * @return true if path is closed
+	 */
+	public boolean isClosed() {
+		Segment first = segments.get(0);
+		Segment last = segments.get(segments.size()-1);
+		
+		return first.point.get(Axis.X).equals(last.point.get(Axis.X)) && first.point.get(Axis.Y).equals(last.point.get(Axis.Y));
+	}
+	
+	/**
 	 * Offset this path by a coordinate
 	 * @param offset
 	 * @return copy of this path with the offset

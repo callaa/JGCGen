@@ -78,5 +78,23 @@ into the workpiece.</p>
 <dd>The polygon radius</dd>
 </dl>
 
+<h2>Cut</h2>
+<p>Generate a 3D cutting path from a 2D path. Like Helix, this generates
+a path that gradually ramps into the workpiece. Only numeric paths
+are supported.
+</p>
+<dl class="methods">
+<dt class="required">src(Path)</dt>
+<dd>The source path</dd>
+<dt>z0(double)</dt>
+<dd>The Z0 height. Default is zero.</dd>
+<dt class="required">depth(double)</dt>
+<dd>The final cutting dapth</dd>
+<dt class="required">pass(double)</dt>
+<dd>The pass cutting dapth</dd>
+<dt class="required">ramp(double)</dt>
+<dd>Minimum ramping distance. The tool will travel at least this distance before reaching the final pass depth.</dd>
+</dl>
+
 #end
 #parse("base.tpl")

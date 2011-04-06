@@ -1,0 +1,36 @@
+#boilerplate
+
+#set($r3singlepass = true)
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+
+#capture($mypath)
+g00 x-10 y10
+g01 x10
+	x5 y0
+	x10 y-10
+	x-10
+	x-5 y0
+g03 x-8 y3 i-3
+g01 x-10 y10
+#end
+#capture($mypathOpen)
+g00 x-10 y10
+g01 x10
+	x5 y0
+	x10 y-10
+	x-10
+	x-5 y0
+g03 x-8 y3 i-3
+#end
+#set($mypathOpen = $mypathOpen.offset("x50y25"))
+
+#g($Shapes.outline.cut.src($mypath).depth(5).pass(1).ramplen(70))
+#g($Shapes.outline.cut.src($mypathOpen).depth(5).pass(1).ramplen(10))
+
+#g($mypath.offset("x-22"), "-5")
+#g($mypathOpen.offset("x-22"), "-5")
+
+m2
