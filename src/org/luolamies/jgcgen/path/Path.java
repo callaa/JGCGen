@@ -58,13 +58,30 @@ public class Path implements PathGenerator {
 		public Segment(SType type, Coordinate point) {
 			this.type = type;
 			this.point = point;
+			this.label = null;
 		}
+		
+		public Segment(SType type, Coordinate point, String label) {
+			this.type = type;
+			this.point = point;
+			this.label = label;
+		}
+		
+		/** The type of the segment */
 		public final SType type;
+		/** The segment point. This can be null when type is SEAM */
 		public final Coordinate point;
+		/** The segment label. This is usually with SEAM to identify subpaths,
+		 * but can be used with points too as general purpose comments. 
+		 */
+		public final String label;
 		
 		@Override
 		public String toString() {
-			return type.name() + " " + point;
+			if(label==null)
+				return type.name() + " " + point;
+			else
+				return type.name() + " " + point + '(' + label + ')';
 		}
 	}
 	
@@ -85,6 +102,16 @@ public class Path implements PathGenerator {
 	 */
 	public void addSegment(SType type, Coordinate point) {
 		segments.add(new Segment(type, point));
+	}
+	
+	/**
+	 * Add a new labeled segment
+	 * @param type
+	 * @param point
+	 * @param label
+	 */
+	public void addSegment(SType type, Coordinate point, String label) {
+		segments.add(new Segment(type, point, label));
 	}
 	
 	/**
@@ -148,13 +175,38 @@ public class Path implements PathGenerator {
 		Path sp = new Path();
 		for(Segment s : segments) {
 			if(s.type==SType.SEAM) {
-				subpaths.add(sp);
+				if(!sp.isEmpty())
+					subpaths.add(sp);
 				sp = new Path();
 			} else
 				sp.segments.add(s);
 		}
 		subpaths.add(sp);
 		return subpaths;
+	}
+	
+	/**
+	 * Extract a subpath starting from the seam with the given label and upto the next seam or end of path.
+	 * @param name
+	 * @return
+	 */
+	public Path getNamedSubpath(String name) {
+		boolean include = false;
+		Path subpath = new Path();
+		for(Segment s : segments) {
+			if(include) {
+				if(s.type==SType.SEAM)
+					break;
+				else
+					subpath.segments.add(s);
+			} else {
+				if(s.type==SType.SEAM && name.equals(s.label))
+					include = true;
+			}
+		}
+		if(!include)
+			throw new IllegalArgumentException("No such subpath: " + name);
+		return subpath;
 	}
 	
 	/**

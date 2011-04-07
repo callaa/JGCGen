@@ -7,44 +7,46 @@
 
 <h2>Paths</h2>
 <p>A path is essentially a list of commands/coordinate pairs. It mirrors G-code quite closely: commands are provided for rapids, linear motion and arcs. However, there are a few key differences. G-code is generated from paths by <dfn>router implementations</dfn>. More on that later.</p>
-<p>The path commands are:</p>
+<p>The path command types are:</p>
 <dl>
 <dt>MOVE</dt><dd>A rapid move to target point.</dd>
 <dt>LINE</dt><dd>Linear motion at feed rate to target point.</dd>
+<dt>POINT</dt><dd>Drilling point.</dd>
 <dt>CWARC and CCWARC</dt><dd>Clockwise and counter clockwise arcs to target point.</dd>
-<dt>SEAM</dt><dd>A marker for separating sub paths/dd>
+<dt>SEAM</dt><dd>A marker for separating sub paths</dd>
 </dl>
 
 <p>Like coordinates, a path too can be either numeric or symbolic. A path is considered numeric if and only if it is made entirely of numeric points.</p>
 
 <p>Path objects can be manipulated with the following methods:</p>
-<dl>
-<dt>path.addSegment(type, coords)</dt><dd>Add a new point to the path.</dd>
+<dl class="methods">
+<dt>addSegment(type, coords, [label])</dt><dd>Add a new point to the path.</dd>
 <dt>path.addPath(path)</dt><dd>Add a another path to the end of this one. A <code>SEAM</code> is added in between.</dd>
-<dt>path.merge(path)</dt><dd>Add a another path to the end of this one. If the second path starts with a MOVE, it will be converted to a LINE.</dd>
-<dt>path.center(axes)</dt><dd>Center the path on the given axes. E.g. <code>path.center("xy")</code>. The path must be numeric.</dd>
-<dt>path.dump()</dt><dd>Print the path contents to stderr. Use this for debugging your script.</dd>
-<dt>path.flatten(axis)</dt><dd>Flatten the path on the given axis.</dd>
-<dt>path.getDimension(axis)</dt><dd>Calculate the dimension of the path on the given axis. The path must be numeric.</dd>
-<dt>path.getSize()</dt><dd>Get the number of segments in the path.</dd>
-<dt>path.offset(coordinates)</dt><dd>Add an offset to the path coordinates.</dd>
-<dd>path.scale(scale)</dt><dd>Scale the path. Scale can be a numeric value such as "2.0" in which case all axes are scaled uniformly. You can also specify different scaling factors for each axis, e.g. "x2.0 y0.5".</dd>
-<dt>path.rotate(angle)</dt>
+<dt>merge(path)</dt><dd>Add a another path to the end of this one. If the second path starts with a MOVE, it will be converted to a LINE.</dd>
+<dt>align(axes)</dt><dd>Align the path on the given axes. Supported axes are x,y and z. If prefixed with '-', the path smallest value will be aligned at zero. If '+' is used, the largest value will be at zero. If no prefix is used, the center of that axis will be at zero. The path must be numeric.</dd>
+<dt>dump()</dt><dd>Print the path contents to stderr. Use this for debugging your script.</dd>
+<dt>flatten(axis)</dt><dd>Flatten the path on the given axis.</dd>
+<dt>getDimension(axis)</dt><dd>Calculate the dimension of the path on the given axis. The path must be numeric.</dd>
+<dt>getSize()</dt><dd>Get the number of segments in the path.</dd>
+<dt>offset(coordinates)</dt><dd>Add an offset to the path coordinates.</dd>
+<dt>scale(scale)</dt><dd>Scale the path. Scale can be a numeric value such as "2.0" in which case all axes are scaled uniformly. You can also specify different scaling factors for each axis, e.g. "x2.0 y0.5".</dd>
+<dt>rotate(angle)</dt>
 <dd>Rotate the path around origin. For example, "z45.0" will rotate the path 45&deg; around the Z axis.</dd>
-<dt>path.splitAtSeams()</dt><dd>Return a list of paths that were separated by SEAMs.</dd>
+<dt>splitAtSeams()</dt><dd>Return a list of paths that were separated by SEAMs.</dd>
+<dt>getNamedSubpath()</dt><dd>Return a path consisting of segments from the named SEAM up to the next SEAM or end of path.</dd>
 </dl>
 <p>Note! All the methods that modify the path (except for addSegment) return a new path with the modifications, leaving the original untouched!</p>
 
 <h3>2D and 3D paths</h3>
 <p>A path is 2D if the Z axis on all its points is undefined or zero. (Code generation is currently supported only for 3 axis mills) When generating code for a 2D path, the Z offset <em>must</em> be given. Most outline and pocket shape generators produce 2D paths.</p>
-<p>3D paths include values on all three axes. The Z offset is typically not used with these paths.</p>
+<p>3D paths include values on all three axes. A Z offset is typically not used with these paths.</p>
 
 <h2>Routers</h2>
 <p>A router class is used to convert a path into G-code. A path describes the tool path in a somewhat abstract way. A router adds the required retracts to safety height, feed rate settings and plunges to make the tool path suitable for the machine type.</p>
 
 <p>A router is called using the \#g directive. If the first parameter is a router instance, it will be used instead of the default one.
 </p>
-<p>The offset parameter is used to offset the depth of cut. This is required for 2D paths. If the offset is greater than the maximum pass depth, multiple passes will be made.</p>
+<p>The offset parameter is used to set the depth of cut. This is required for 2D paths. If the offset is greater than the maximum pass depth, multiple passes will be made. This generates a <em>2.5D</em> toolpath. If you want to ramp the tool into the workpiece instead of plunging straight down, you can use the <a href="outline.html#cut">Cut</a> generator to turn a 2D toolpath into a 3D one.</p>
 <p>In general, an offset should not be used with 3D paths. The path itself is not modified, only the Z value will be offsetted when cutting, so the maximum pass depth will not protect you if the 3D path calls for a too deep cut!</p>
 
 #end

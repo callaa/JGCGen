@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.luolamies.jgcgen.path.Path;
-import org.luolamies.jgcgen.path.Path.SType;
 import org.w3c.dom.Element;
 
 /**

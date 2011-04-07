@@ -2,7 +2,6 @@ package org.luolamies.jgcgen.importer.svg;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import org.luolamies.jgcgen.RenderException;
 import org.luolamies.jgcgen.path.Path;
@@ -103,9 +102,11 @@ public class PathExtractor implements PathGenerator {
 		// Check if this node has been explicitly excluded or included
 		Extr extr = id!=null ? extract(id) : null;
 		if(extr!=null) {
-			if(extr.include)
+			if(extr.include) {
 				include = true;
-			else
+				// add a seam before an explicitly included node
+				path.addSegment(Path.SType.SEAM, null, id);
+			} else
 				return;
 		}
 		

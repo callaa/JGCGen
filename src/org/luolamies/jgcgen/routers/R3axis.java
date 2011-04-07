@@ -123,6 +123,12 @@ public class R3axis extends Router {
 				out.write(safez.toGcode());
 				out.write("\n\t");
 				out.write(firstpoint.toGcode());
+				if(segments.get(0).label!=null) {
+					out.write(" (");
+					out.write(segments.get(0).label);
+					out.write(')');
+				}
+					
 				if(nearz!=null) {
 					out.write("\n\t");
 					out.write(nearz.toGcode());
@@ -161,6 +167,11 @@ public class R3axis extends Router {
 					out.write((rapidnear && !firstrapid ? nearz : safez).toGcode());
 					out.write("\n\t");
 					out.write(s.point.undefined(Axis.Z).toGcode());
+					if(s.label!=null) {
+						out.write(" (");
+						out.write(s.label);
+						out.write(')');
+					}
 					out.write('\n');
 				}
 				
@@ -220,6 +231,13 @@ public class R3axis extends Router {
 					out.write(s.point.get(Axis.Z));
 				} else // Otherwise plunge to Z offset + depth of point
 					out.write(Coordinate.parse("z" + (zvar!=null ? zvar : zoff)).offset(s.point).get(Axis.Z));
+				
+				if(s.label!=null) {
+					out.write(" (");
+					out.write(s.label);
+					out.write(')');
+				}
+				
 				out.write('\n');
 				// Retract back to safety (if this is not the last entry)
 				if(i.hasNext()) {
@@ -248,6 +266,11 @@ public class R3axis extends Router {
 				if(zoffc!=null)
 					point = point.offset(zvarc!=null ? zvarc : zoffc);
 				out.write(point.toGcode());
+				if(s.label!=null) {
+					out.write(" (");
+					out.write(s.label);
+					out.write(')');
+				}
 				out.write('\n');
 				break;
 			default:

@@ -78,7 +78,7 @@ into the workpiece.</p>
 <dd>The polygon radius</dd>
 </dl>
 
-<h2>Cut</h2>
+<h2 id="cut">Cut</h2>
 <p>Generate a 3D cutting path from a 2D path. Like Helix, this generates
 a path that gradually ramps into the workpiece. Only numeric paths
 are supported.
