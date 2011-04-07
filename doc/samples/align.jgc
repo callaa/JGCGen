@@ -1,0 +1,29 @@
+(Path alignment)
+#boilerplate
+
+#set($r3singlepass = true)
+
+$safe_z = 5
+$default_f = 600
+$plunge_f = 150
+$passdepth = 3
+
+#capture($path)
+g00 x5 y-5
+g01 x15
+	x5 y-20
+	x5 y-5
+#end
+
+#g($path, "-1")
+
+#g($path.align("-x").offset("y20"), "-1")
+#g($path.align("x").offset("y40"), "-1")
+#g($path.align("+x").offset("y60"), "-1")
+
+#g($path.align("-y").offset("x20"), "-1")
+#g($path.align("y").offset("x40"), "-1")
+#g($path.align("+y").offset("x60"), "-1")
+
+m2
+

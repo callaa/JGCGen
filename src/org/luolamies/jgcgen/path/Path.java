@@ -18,7 +18,6 @@ package org.luolamies.jgcgen.path;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -269,47 +268,81 @@ public class Path implements PathGenerator {
 	}
 	
 	/**
-	 * Return a copy of this path with coordinates on the given axes centered.
-	 * <p>This method can only be called on paths where each coordinate
-	 * is numeric. 
-	 * @return centered path
+	 * Return a copy of this path aligned to origin by the given coordinates. Possible alignments are:
+	 * <ul>
+	 * <li>-x: Leftmost point on the path will be zero
+	 * <li>x: Horizontal center of path will be at zero
+	 * <li>+x: Rightmost point on the path will be zero
+	 * <li>And the same of y and z
+	 * </ul>
+	 * @param axes
+	 * @return
 	 */
-	public Path center(String axis) {
-		// Select axes
-		EnumSet<Axis> axes = EnumSet.noneOf(Axis.class);
-		for(int i=0;i<axis.length();++i)
-			axes.add(Axis.valueOf(Character.toString(Character.toUpperCase(axis.charAt(i)))));
-
-		if(axes.isEmpty())
-			throw new IllegalArgumentException("No axes specified!");
+	public Path align(String axes) {
+		Integer[] align = new Integer[3];
+		
+		// Parse alignment string
+		int state=0;
+		for(int i=0;i<axes.length();++i) {
+			char chr = Character.toLowerCase(axes.charAt(i));
+			if(Character.isWhitespace(chr))
+				continue;
+			
+			if(state==0) {
+				// Expect [+-xyz]
+				if(chr=='-')
+					state = -1;
+				else if(chr=='+')
+					state = 1;
+				else if(chr=='x'||chr=='y'||chr=='z')
+					align[chr-'x'] = 0;
+				else
+					throw new IllegalArgumentException("Expected +, -, x, y or z. Got '" + chr + "'");
+			} else if(state==-1 || state==1) {
+				// Expect [xyz]
+				if(chr=='x'||chr=='y'||chr=='z')
+					align[chr-'x'] = state;
+				else
+					throw new IllegalArgumentException("Expected x, y or z. Got '" + chr + "'");
+				state=0;
+			}
+		}
 		
 		// Initialize bounds variables
-		double[] min = new double[Axis.values().length];
-		double[] max = new double[Axis.values().length];
-		for(int i=0;i<min.length;++i) {
-			min[i] = Double.MAX_VALUE;
-			max[i] = -Double.MAX_VALUE;
-		}
+		Double[] min = new Double[3];
+		Double[] max = new Double[3];
 		
 		// Find path bounds
 		for(Segment s : segments) {
 			if(s.point!=null) {
 				NumericCoordinate nc = (NumericCoordinate)s.point;
-				for(Axis a : axes) {
-					int i = a.ordinal();
-					if(nc.getValue(a) < min[i])
-						min[i] = nc.getValue(a);
-					if(nc.getValue(a) > max[i])
-						max[i] = nc.getValue(a);
+				for(int i=0;i<3;++i) {
+					Axis a = Axis.values()[i];
+					Double val = nc.getValue(a);
+					if(val!=null) {
+						if(min[i]==null)
+							min[i] = max[i] = val;
+						else if(val < min[i])
+							min[i] = val;
+						else if(val > max[i])
+							max[i] = val;
+					}
 				}
 			}
 		}
 		
 		// Calculate offset
 		NumericCoordinate offset = new NumericCoordinate();
-		for(Axis a : axes) {
-			int i = a.ordinal();
-			offset.set(a, -min[i] - (max[i]-min[i])/2.0);
+		for(int i=0;i<3;++i) {
+			if(align[i]!=null && min[i]!=null) {
+				Axis a = Axis.values()[i];
+				if(align[i]<0)
+					offset.set(a, -min[i]);
+				else if(align[i]>0)
+					offset.set(a, -max[i]);
+				else
+					offset.set(a, -min[i] - (max[i]-min[i])/2.0);
+			}
 		}
 		
 		// Apply offset

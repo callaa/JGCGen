@@ -17,10 +17,10 @@
 package org.luolamies.jgcgen.path;
 
 /**
- * Known axises
- *
+ * Supported axes.
  */
 public enum Axis {
+	// Note. XYZ must be the first axes, because some code relies on their ordinals.
 	X,
 	Y, 
 	Z,

@@ -18,7 +18,7 @@ $plunge_f = 100
 ## Load the font
 #set($font = $Fonts.get("timesr.jhf"))
 $font.setOption("lspace", 2.0)
-#set($text = $font.getString("Hello World!").center("xy").offset("x110y-110"))
+#set($text = $font.getString("Hello World!").align("xy").offset("x110y-110"))
 
 ## Render the projected text
 #g($surf.project($text, ""), "-2")

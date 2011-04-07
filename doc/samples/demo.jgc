@@ -16,7 +16,7 @@ $passdepth = 3
 $router.setOverride("rapidnear", "true")
 #set($font = $Fonts.get("futural.jhf"))
 $font.setOption("lspace", 3)
-#g($font.getString("JGCGen").center("xy").scale("0.5").offset("x30 y-12.5"), "#<_engrave>")
+#g($font.getString("JGCGen").align("xy").scale("0.5").offset("x30 y-12.5"), "#<_engrave>")
 
 (Cut out)
 #g($Shapes.outline.rectangle.pos("-1.5","1.5").size("63","28").round("-5"), "#<_cut>")

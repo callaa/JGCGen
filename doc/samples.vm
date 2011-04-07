@@ -18,6 +18,7 @@
 #sample("demo", "A simple demonstration script")
 #sample("sub", "Demonstrates subroutines and flow control")
 #sample("transforms", "Coordinate transformations")
+#sample("align", "Path alignment")
 #sample("outline_line", "Straight lines")
 #sample("outline_circle", "Circular outlines")
 #sample("outline_rect", "Rectangle outlines")
