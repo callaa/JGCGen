@@ -8,6 +8,10 @@ $passdepth = 3
 ## Uncomment this to disable multiple passes
 ##set($r3singlepass = true)
 
+#set($rapidnear = true)
+
+#g($Shapes.outline.circle.radius("10").bridges(4, 3).origin("x0y60"), "-5")
+
 #set($circle = $Shapes.outline.circle.radius("10"))
 #g($circle.cw().origin("x0y0"), "-5")
 #g($circle.ccw().origin("x25y0"), "-5")
