@@ -407,19 +407,57 @@ public class Path implements PathGenerator {
 		}
 		return np;
 	}
-	
+
 	/**
 	 * Return a copy of this path flattened along one axis
 	 * @param axis
 	 * @return flattened path
 	 */
 	public Path flatten(String axis) {
+		return flatten(axis, null);
+	}
+	
+	/**
+	 * Return a copy of this path flattened along one axis
+	 * @param axis
+	 * @param value value to set the axis to
+	 * @return flattened path
+	 */
+	public Path flatten(String axis, String value) {
 		Axis a = Axis.valueOf(axis.toUpperCase());
 		Path np = new Path();
+		
+		Double dv = null;
+		try {
+			if(value!=null)
+				dv = Double.valueOf(value);
+		} catch(NumberFormatException e) {
+			// Value is not numeric: numeric paths will be converted to symbolic.
+		}
+		
 		for(Segment s : segments) {
-			if(s.point!=null)
-				np.segments.add(new Segment(s.type, s.point.undefined(a)));
-			else
+			if(s.point!=null) {
+				Coordinate c;
+				if(value==null) {
+					// Undefined value
+					c = s.point.undefined(a);
+				} else if(dv==null) {
+					// Symbolic value
+					if(s.point instanceof NumericCoordinate)
+						c = ((NumericCoordinate)s.point).toSymbolic();
+					else
+						c = s.point.copy();
+					((SymbolicCoordinate)c).set(a, value);
+				} else {
+					// Numeric value
+					c = s.point.copy();
+					if(c instanceof NumericCoordinate)
+						((NumericCoordinate)c).set(a, dv);
+					else
+						((SymbolicCoordinate)c).set(a, value);
+				}
+				np.segments.add(new Segment(s.type, c));
+			} else
 				np.segments.add(s);
 		}
 		

@@ -306,6 +306,12 @@ public abstract class Coordinate {
 		}
 		return sb.toString();
 	}
+
+	/**
+	 * Return a copy of this coordinate set.
+	 * @return copy of this
+	 */
+	public abstract Coordinate copy();
 	
 	public String toString() {
 		return toGcode();

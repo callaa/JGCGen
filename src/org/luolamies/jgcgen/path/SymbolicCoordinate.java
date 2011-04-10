@@ -53,6 +53,9 @@ public final class SymbolicCoordinate extends Coordinate {
 			axes.put(Axis.Z, z);
 	}
 	
+	public SymbolicCoordinate copy() {
+		return new SymbolicCoordinate(this);
+	}
 	public void set(Axis a, String value) {
 		if(value==null)
 			axes.remove(a);

@@ -77,6 +77,10 @@ public final class NumericCoordinate extends Coordinate {
 			axes.put(Axis.X, Double.valueOf(z));
 	}
 	
+	public NumericCoordinate copy() {
+		return new NumericCoordinate(this);
+	}
+	
 	/**
 	 * Get the distance to another coordinate.
 	 * <p>Only X, Y and Z values are used in this calculation.

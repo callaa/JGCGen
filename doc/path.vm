@@ -25,7 +25,7 @@
 <dt>merge(path)</dt><dd>Add a another path to the end of this one. If the second path starts with a MOVE, it will be converted to a LINE.</dd>
 <dt>align(axes)</dt><dd>Align the path on the given axes. Supported axes are x,y and z. If prefixed with '-', the path smallest value will be aligned at zero. If '+' is used, the largest value will be at zero. If no prefix is used, the center of that axis will be at zero. The path must be numeric.</dd>
 <dt>dump()</dt><dd>Print the path contents to stderr. Use this for debugging your script.</dd>
-<dt>flatten(axis)</dt><dd>Flatten the path on the given axis.</dd>
+<dt>flatten(axis, [value])</dt><dd>Flatten the path on the given axis.</dd>
 <dt>getDimension(axis)</dt><dd>Calculate the dimension of the path on the given axis. The path must be numeric.</dd>
 <dt>getSize()</dt><dd>Get the number of segments in the path.</dd>
 <dt>offset(coordinates)</dt><dd>Add an offset to the path coordinates.</dd>
