@@ -36,6 +36,7 @@
 #sample("parametric", "Parametric surface demonstration")
 #sample("projection", "Path projection onto image surface")
 #sample("import_svg", "SVG import demonstration")
+#sample("import_svg2", "SVG curve demo")
 	</tbody>
 </table>
 
