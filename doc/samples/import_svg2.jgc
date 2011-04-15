@@ -1,0 +1,14 @@
+#boilerplate
+#set($rapidnear = true)
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+$passdepth = 2
+
+(Test SVG arcs)
+#set($svg = $Import.file("arctest.svg"))
+
+#g($svg.path.id("layer1"), "-1")
+
+m2

@@ -20,7 +20,7 @@ class SvgPath {
 	
 	/** The current "pen" position */
 	private double posx, posy;
-	/** Previous countrol point (curves) */
+	/** Previous control point (curves) */
 	private CP oldctrl;
 	
 	/** The current position in data string */
@@ -238,7 +238,7 @@ class SvgPath {
 	}
 	
 	private void cubicbezier(CP cp1, CP cp2, CP cp3) {
-		List<CP> approx = Bezier.linearapprox(new CP(posx, posy), cp1, cp2, cp3);
+		List<CP> approx = Curves.linearapproxCubicBezier(new CP(posx, posy), cp1, cp2, cp3);
 		
 		posx = cp3.x;
 		posy = cp3.y;		
@@ -308,8 +308,11 @@ class SvgPath {
 				}
 				*/
 				
-				// TODO
-				System.err.println("TODO arc " + radius.x + "x" + radius.y + ", " + xrot + ", " + largearc + ", " + sweep);
+				List<CP> arcpoints = Curves.ellipseArc(arc0, radius, xrot, largearc, sweep, arc);
+				
+				for(CP cp : arcpoints)
+					path.addSegment(Path.SType.LINE, matrix.apply(cp.x, cp.y));
+				
 			} else {
 				break;
 			}
