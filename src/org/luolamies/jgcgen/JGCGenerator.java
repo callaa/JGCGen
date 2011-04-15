@@ -25,7 +25,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -65,6 +67,8 @@ public class JGCGenerator {
 	
 	public static void main(String[] args) {
 
+		Map<String,String> vars = new HashMap<String,String>();
+		
 		// Default flags
 		boolean split = false;
 		
@@ -78,6 +82,7 @@ public class JGCGenerator {
 		opts.addOption("s", false, "Split output");
 		opts.addOption("o", true, "Output filename");
 		opts.addOption("v", false, "Verbose error messages");
+		opts.addOption("D", true, "Define variable (var=value)");
 		
 		CommandLineParser parser = new GnuParser();
 		CommandLine cmd;
@@ -96,6 +101,18 @@ public class JGCGenerator {
 		
 		if(cmd.hasOption('o')) {
 			outputfile = cmd.getOptionValue('o');
+		}
+		
+		String[] vardefs = cmd.getOptionValues('D');
+		if(vardefs!=null) {
+			for(String var : vardefs) {
+				int eq = var.indexOf('=');
+				if(eq<0) {
+					System.err.println(var + ": Variable value missing!");
+					System.exit(1);
+				}
+				vars.put(var.substring(0, eq).trim(), var.substring(eq+1).trim());
+			}
 		}
 		
 		if(cmd.hasOption('s'))
@@ -187,7 +204,7 @@ public class JGCGenerator {
 			return;
 		}
 		
-		if(renderTemplate(inputfile, outputfile, template, split)==false)
+		if(renderTemplate(inputfile, outputfile, template, split, vars)==false)
 			System.exit(1);
 	}
 	
@@ -198,10 +215,10 @@ public class JGCGenerator {
 	 * @param template template to render
 	 * @param split enable split mode?
 	 */
-	static public boolean renderTemplate(String input, String outfile, Template template, boolean split) {
+	static public boolean renderTemplate(String input, String outfile, Template template, boolean split, Map<String, String> vars) {
 		int i = split ? 1 : 0;
 		do {
-			i = renderTemplate2(input, outfile, template, i);
+			i = renderTemplate2(input, outfile, template, i, vars);
 		} while(i>0);
 		return i==0;
 	}
@@ -217,7 +234,7 @@ public class JGCGenerator {
 	 * @return -1 on error, 0 when done, positive integer for the next split block
 	 */
 	@SuppressWarnings("unchecked")
-	static private int renderTemplate2(String input, String outfile, Template template, int split) {
+	static private int renderTemplate2(String input, String outfile, Template template, int split, Map<String, String> vars) {
 		
 		// Decide output file name
 		OutputStream out;
@@ -243,7 +260,10 @@ public class JGCGenerator {
 		VelocityContext ctx = new VelocityContext();
 
 		Configuration.getInstance().setVariables(ctx);
-		
+
+		for(Map.Entry<String, String> e : vars.entrySet())
+			ctx.put(e.getKey(), e.getValue());
+
 		ctx.put("inputfile", input);
 		
 		if(split>0) {
