@@ -16,4 +16,7 @@ g01 x10
 #end
 #g($mypath, "-5")
 
+(Rotate captured path)
+#g($mypath.rotate("z45").offset("y-30"), "-5")
+
 m2

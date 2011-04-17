@@ -285,10 +285,15 @@ public class Path implements PathGenerator {
 	public Path rotate(String rotation) {
 		Coordinate r = Coordinate.parse(rotation);
 		Path op = new Path();
+		Coordinate prev = null;
 		for(Segment s : segments) {
-			if(s.point!=null)
-				op.segments.add(new Segment(s.type, s.point.rotate(r)));
-			else
+			if(s.point!=null) {
+				Coordinate p = s.point;
+				if(prev!=null)
+					p = p.fillIn(prev);
+				prev = p;
+				op.segments.add(new Segment(s.type, p.rotate(r)));
+			} else
 				op.segments.add(s);
 		}
 		return op;

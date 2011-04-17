@@ -186,4 +186,16 @@ public final class SymbolicCoordinate extends Coordinate {
 		c.set(b, "[[" + x + "] * SIN[" + theta + "] + [" + y + "] * COS[" + theta + "]]");
 	}
 
+	@Override
+	public SymbolicCoordinate fillIn(Coordinate c) {
+		SymbolicCoordinate nc = new SymbolicCoordinate(this);
+		
+		for(Axis a : Axis.XYZ)
+			if(nc.axes.get(a)==null && c.get(a)!=null)
+				nc.axes.put(a, c.get(a));
+		
+		return nc;
+		
+	}
+
 }

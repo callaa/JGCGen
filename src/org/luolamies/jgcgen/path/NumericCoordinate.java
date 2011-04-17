@@ -263,4 +263,18 @@ public final class NumericCoordinate extends Coordinate {
 		c.set(a, x * ct - y * st);
 		c.set(b, x * st + y * ct);
 	}
+
+	@Override
+	public Coordinate fillIn(Coordinate c) {
+		if(c instanceof SymbolicCoordinate)
+			return toSymbolic().fillIn(c);
+		NumericCoordinate cc = (NumericCoordinate)c;
+		NumericCoordinate nc = new NumericCoordinate(this);
+		
+		for(Axis a : Axis.XYZ)
+			if(nc.axes.get(a)==null && cc.axes.get(a)!=null)
+				nc.axes.put(a, cc.axes.get(a));
+		
+		return nc;
+	}
 }

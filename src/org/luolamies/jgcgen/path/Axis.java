@@ -43,4 +43,6 @@ public enum Axis {
 			return null;
 		}
 	}
+	
+	static public Axis[] XYZ = {X, Y, Z};
 }

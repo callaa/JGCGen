@@ -228,6 +228,13 @@ public abstract class Coordinate {
 	}
 	
 	/**
+	 * Get a copy of this coordinate with the unset axes set from the
+	 * given coordinate.
+	 * @param c
+	 */
+	public abstract Coordinate fillIn(Coordinate c);
+	
+	/**
 	 * Return a copy of this coordinate with a positive sign.
 	 * @return abs(this)
 	 */
