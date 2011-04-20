@@ -15,7 +15,7 @@ class SvgPath {
 		new SvgPath(el.getAttribute("d"), path, matrix).parse();
 	}
 	
-	/** Path starting coordinates */
+	/** (Sub)path starting coordinates */
 	private Double startx, starty;
 	
 	/** The current "pen" position */
@@ -88,10 +88,8 @@ class SvgPath {
 		
 		path.addSegment(Path.SType.MOVE, matrix.apply(posx, posy));
 		
-		if(startx==null) {
-			startx = posx;
-			starty = posy;
-		}
+		startx = posx;
+		starty = posy;
 		
 		// See if lines follow this
 		while(skip_ws()) {
