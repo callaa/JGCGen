@@ -181,7 +181,30 @@ public class Path implements PathGenerator {
 			} else
 				sp.segments.add(s);
 		}
-		subpaths.add(sp);
+		if(!sp.isEmpty())
+			subpaths.add(sp);
+		return subpaths;
+	}
+	
+	/**
+	 * Split this path at move commands.
+	 * @return new paths
+	 */
+	public List<Path> splitAtSubpaths() {
+		List<Path> subpaths = new ArrayList<Path>();
+		Path sp = new Path();
+		for(Segment s : segments) {
+			if(s.type==SType.MOVE) {
+				if(!sp.isEmpty()) {
+					subpaths.add(sp);
+					sp = new Path();
+				}
+			}
+			
+			sp.segments.add(s);
+		}
+		if(!sp.isEmpty())
+			subpaths.add(sp);
 		return subpaths;
 	}
 	
