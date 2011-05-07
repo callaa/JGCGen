@@ -162,7 +162,7 @@ public class R3axis extends Router {
 			case MOVE:
 				// The rapid over target point is skipped when we do multiple passes
 				// and the end point is the same as the starting point.
-				if(!skipfirstrapid) {
+				if(!skipfirstrapid || !firstrapid) {
 					out.write("G00 ");
 					out.write((rapidnear && !firstrapid ? nearz : safez).toGcode());
 					out.write("\n\t");
