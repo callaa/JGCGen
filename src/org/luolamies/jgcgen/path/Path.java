@@ -54,7 +54,7 @@ public class Path implements PathGenerator {
 	/**
 	 * Path segment
 	 */
-	static public class Segment {
+	static public final class Segment {
 		public Segment(SType type, Coordinate point) {
 			this.type = type;
 			this.point = point;
@@ -83,6 +83,24 @@ public class Path implements PathGenerator {
 			else
 				return type.name() + " " + point + '(' + label + ')';
 		}
+
+		/**
+		 * Get the segment comment/label
+		 * @return
+		 */
+		public final String getLabel() { return label; }
+		
+		/**
+		 * Get the type of the segment
+		 * @return segment type
+		 */
+		public final SType getType() { return type; }
+		
+		/**
+		 * Get the segment point. This can be null when type is SEAM
+		 * @return point or null if segment has no point
+		 */
+		public final Coordinate getPoint() { return point; }
 	}
 	
 	private List<Segment> segments;
@@ -320,6 +338,26 @@ public class Path implements PathGenerator {
 				op.segments.add(s);
 		}
 		return op;
+	}
+	
+	/**
+	 * Get a version of this path with all X, Y and Z values defined
+	 * @return
+	 */
+	public Path getComplete() {
+		Path p = new Path();
+		Coordinate prev = null;
+		for(Segment s : segments) {
+			if(s.point != null) {
+				Coordinate point = s.point;
+				if(prev!=null)
+					point = point.fillIn(prev);
+				prev = point;
+				p.segments.add(new Segment(s.type, point));
+			} else
+				p.segments.add(s);
+		}
+		return p;
 	}
 	
 	/**
