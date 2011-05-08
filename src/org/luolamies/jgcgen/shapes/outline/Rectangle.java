@@ -101,7 +101,7 @@ public class Rectangle implements PathGenerator {
 			throw new RenderException("X and Y coordinates in path not defined!");
 		
 		x = Double.toString(minx-offset);
-		y = Double.toString(miny-offset);
+		y = Double.toString(maxy+offset);
 		w = Double.toString(maxx-minx+2*offset);
 		h = Double.toString(maxy-miny+2*offset);
 		
