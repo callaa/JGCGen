@@ -9,6 +9,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.luolamies.jgcgen.Files;
+import org.luolamies.jgcgen.JGCGenerator;
 
 /**
  * A heightmap image
@@ -29,6 +30,9 @@ final class ImageData extends Surface {
 			width = img.getWidth();
 			height = img.getHeight();
 		}
+		
+		JGCGenerator.getLogger().status("ImageData(" + filename + "): " + img.getWidth() + "x" + img.getHeight() + " px.");
+		
 		data = new float[width*height];
 		
 		// Make sure the image is grayscale		
@@ -85,6 +89,7 @@ final class ImageData extends Surface {
 	public void setTargetSize(double w, double h, double d) {
 		xyscale = Math.min(w / (width-1), h / (height-1));
 		zscale = d;
+		JGCGenerator.getLogger().status("ImageData " + w + "x" + h + ", xyscale=" + xyscale + ", zscale=" + zscale);
 	}
 	
 	public double getResolution() {

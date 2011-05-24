@@ -64,7 +64,6 @@ public class Image implements PathGenerator {
 	public Image src(Surface surface) {
 		filename = null;
 		imgcache = surface;
-		System.err.println("imgcache set " + surface);
 		return this;
 	}
 	
@@ -270,16 +269,9 @@ public class Image implements PathGenerator {
 			imgcache.setTargetSize(xsize, ysize, zscale);
 			
 			// Get true size
-			double targaspect = xsize / ysize;
-			if(targaspect < imgcache.getAspectRatio()) {
-				// Target rect. is taller than the image
-				width = xsize;
-				height = xsize / imgcache.getAspectRatio();
-			} else {
-				// Target rect. is wider than the image
-				width = ysize / imgcache.getAspectRatio();
-				height = ysize;
-			}
+			// TODO maintain aspect ratio
+			width = xsize;
+			height = ysize;
 		} else if(filename==null) {
 			// Initialize external surface
 			imgcache.setTargetSize(xsize, ysize, zscale);
