@@ -1,9 +1,8 @@
 package org.luolamies.jgcgen.shapes.surface;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.luolamies.jgcgen.path.NumericCoordinate;
 import org.luolamies.jgcgen.path.Path;
 
 /**
@@ -12,24 +11,42 @@ import org.luolamies.jgcgen.path.Path;
  */
 class OutlineStrategy implements ImageStrategy {
 	private final Image image;
-	private final double passdepth;
+	private final double minpass, maxpass;
 	private final double resolution;
 	
 	public OutlineStrategy(Image image) {
 		this.image = image;
-		this.passdepth = 0;
+		this.minpass = 0;
+		this.maxpass = 0;
 		this.resolution = 0;
 	}
 	
+	/**
+	 * Outline strategy with parameters.
+	 * Parameters are: <code>pass depth</code> <code>[resolution]</code>.
+	 * Pass depth can be a range: e.g. 0.05-2. In this case, 0.05 is the minimum pass depth and 2 is the largest pass that will be taken.
+	 * @param image
+	 * @param params
+	 */
 	public OutlineStrategy(Image image, String params) {
 		this.image = image;
 		String[] param = params.split(" ");
 		if(param.length!=1 && param.length!=2)
 			throw new IllegalArgumentException("RoughStrategy takes 0, 1 or 2 parameters!");
 
-		passdepth = Double.parseDouble(param[0]);
-		if(passdepth<0)
-			throw new IllegalArgumentException("Pass depth must be positive!");
+		Matcher passdepth = passpattern.matcher(param[0]);
+		if(passdepth.matches()) {
+			minpass = Double.parseDouble(passdepth.group(1));
+			if(passdepth.group(2)==null)
+				maxpass = minpass;
+			else
+				maxpass = Double.parseDouble(passdepth.group(2));
+			if(minpass<=0)
+				throw new IllegalArgumentException("Pass depth must be greater than zero!");
+			if(maxpass < minpass)
+				throw new IllegalArgumentException("Max pass must be greater than minimum pass");			
+		} else
+			throw new IllegalArgumentException("Invalid pass depth!");
 		
 		if(param.length==2) {
 			resolution = Double.parseDouble(param[1]);
@@ -39,14 +56,18 @@ class OutlineStrategy implements ImageStrategy {
 			resolution = 0;
 	}
 	
+	static private final Pattern passpattern = Pattern.compile("(\\d+(?:\\.\\d+)?)(?:\\s*-\\s*(\\d+(?:\\.\\d+)))?");
+	
 	public Path toPath(Surface img) {
-		double pd = passdepth;
-		if(pd==0)
-			pd = image.getTool().getRadius();
-		
 		double res = resolution;
 		if(res==0)
 			res = img.getResolution();
+		
+		double mind = minpass, maxd = maxpass;
+		if(mind==0)
+			mind = res;
+		if(maxd==0)
+			maxd = image.getTool().getRadius();
 		
 		Path path = new Path();
 		
@@ -54,27 +75,28 @@ class OutlineStrategy implements ImageStrategy {
 		
 		final double minz = -img.getMaxZ();
 		double z=0;
+		double skipped = 0;
 		while(z>minz) {
-			z -= pd;
+			z -= mind;
 			if(z<minz)
 				z = minz;
-			if(plane.init(z))
-				break;
-			
-			path.addPath(plane.trace());
-			/*
-			for(List<Plane.Point> ppath : paths) {
-				//plane.straighten(ppath);
-				
-				Iterator<Plane.Point> i = ppath.iterator();
-				Plane.Point p = i.next();
-				path.addSegment(Path.SType.MOVE, new NumericCoordinate((double)p.x, (double)-p.y, z));
-				while(i.hasNext()) {
-					p = i.next();
-					path.addSegment(Path.SType.LINE, new NumericCoordinate((double)p.x, (double)-p.y, z));
+			if(plane.init(z)) {
+				// Encountered last plane?
+				if(skipped>0)
+					plane.restorePrevious();
+				else
+					break;
+			} else if(skipped < maxd){
+				// Is the new plane same as the old plane?
+				if(plane.isIdentical()) {
+					skipped += mind;
+					continue;
 				}
 			}
-			*/
+			
+			skipped = 0;
+			
+			path.addPath(plane.trace());
 		}
 		
 		return path;

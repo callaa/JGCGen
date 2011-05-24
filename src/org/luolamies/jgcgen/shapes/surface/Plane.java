@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
 import java.util.List;
 
 import org.luolamies.jgcgen.RenderException;
@@ -21,10 +22,12 @@ import org.xml.sax.SAXException;
  */
 class Plane {
 	private final double[] depthmap;
-	private final boolean[] bitmap;
 	private final double resolution;
+	private final double width, height;
 	private final int bmw, bmh;
-	private double curz;
+	private double curz, prevz;
+	
+	private boolean[] bitmap, prevbitmap;
 	
 	public static class Point {
 		public Point(int x, int y) {
@@ -36,14 +39,14 @@ class Plane {
 	
 	public Plane(Surface surface, Tool tool, double width, double height, double resolution) {
 		this.resolution = resolution;
+		this.width = width;
+		this.height = height;
 		
 		this.bmw = (int)Math.ceil(width / resolution);
 		this.bmh = (int)Math.ceil(height / resolution);
 		
 		if(bmw==0 || bmh==0)
 			throw new IllegalArgumentException("Image would be one dimensional!");
-		
-		this.bitmap = new boolean[bmw * bmh];
 		this.depthmap = new double[bmw * bmh];
 		
 		int i=-1;
@@ -63,6 +66,9 @@ class Plane {
 	 */
 	public boolean init(double level) {
 		boolean solid=true;
+		prevbitmap = bitmap;
+		prevz = curz;
+		bitmap = new boolean[bmw * bmh];
 		for(int i=0;i<depthmap.length;++i) {
 			bitmap[i] = depthmap[i] > level;
 			solid &= bitmap[i];
@@ -71,9 +77,26 @@ class Plane {
 		return solid;
 	}
 	
+	/**
+	 * Is the newly initialized plane identical to the previous plane?
+	 * This is used for optimization.
+	 * @return true if last call to init() produced an identical bitmap as the previous one.
+	 */
+	public boolean isIdentical() {
+		return Arrays.equals(bitmap, prevbitmap);
+	}
+	
+	/**
+	 * Restore the plane before the last init()
+	 */
+	public void restorePrevious() {
+		bitmap = prevbitmap;
+		curz = prevz;
+	}
+	
 	public Path trace() {
 		try {
-			Process potrace = Runtime.getRuntime().exec("potrace --svg");
+			Process potrace = Runtime.getRuntime().exec("potrace --svg -W " + width + "mm -H " + height + "mm");
 			
 			System.err.println("Tracing layer...");
 			printPbm(potrace.getOutputStream());
@@ -84,7 +107,7 @@ class Plane {
 			System.err.println("done.");
 			System.err.println("exit: " + potrace.exitValue());
 			
-			Path path = svg.getPath().all().toPath(); 
+			Path path = svg.getPath().all().toPath();
 			for(Path.Segment s : path.getSegments())
 				((NumericCoordinate)s.point).set(Axis.Z, curz);
 			
