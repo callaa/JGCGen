@@ -13,6 +13,7 @@ import org.w3c.dom.NodeList;
 public class PathExtractor implements PathGenerator {
 	private final SvgImporter svg;
 	private List<Extr> extract; 
+	private boolean extractAll;
 	
 	private static class Extr {
 		Extr(boolean include, String id) {
@@ -26,6 +27,15 @@ public class PathExtractor implements PathGenerator {
 	PathExtractor(SvgImporter svg) {
 		this.svg = svg;
 		this.extract = new ArrayList<Extr>();
+	}
+	
+	/**
+	 * Include everything
+	 * @return this
+	 */
+	public PathExtractor all() {
+		extractAll = true;
+		return this;
 	}
 	
 	/**
@@ -61,13 +71,13 @@ public class PathExtractor implements PathGenerator {
 		return null;
 	}
 	
-	private boolean isExcluded(String id) {
+	private boolean isExcluded(String id) {		
 		Extr e = extract(id);
 		return e!=null && e.include==false;
 	}
 	
 	public Path toPath() {
-		if(extract.isEmpty())
+		if(!extractAll && extract.isEmpty())
 			throw new RenderException("No includes set!");
 		
 		Path path = new Path();
@@ -82,7 +92,7 @@ public class PathExtractor implements PathGenerator {
 		// Convert selected elements
 		// Convert selected elements
 		// Convert selected elements
-		render(path, svg.root, svg.rootmatrix, false);
+		render(path, svg.root, svg.rootmatrix, extractAll);
 		
 		return path;
 	}

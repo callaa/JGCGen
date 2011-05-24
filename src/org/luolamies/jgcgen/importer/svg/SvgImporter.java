@@ -1,6 +1,8 @@
 package org.luolamies.jgcgen.importer.svg;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,6 +20,10 @@ public class SvgImporter extends Importer {
 	Transform rootmatrix;
 	
 	public SvgImporter(String file) throws SAXException, IOException {
+		this(new FileInputStream(file));
+	}
+	
+	public SvgImporter(InputStream input) throws SAXException, IOException {
 		DocumentBuilder builder;
 		try {
 			builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -25,7 +31,7 @@ public class SvgImporter extends Importer {
 			throw new RenderException("Couldn't construct document builder", e);
 		}
 		
-		Document doc = builder.parse(Files.get(file));
+		Document doc = builder.parse(input);
 		
 		root = doc.getDocumentElement();
 		scale(1.0 / (90 / 25.5));
