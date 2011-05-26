@@ -33,6 +33,8 @@
 #sample("img_simple", "Image carving samples with <i>simple</i> strategy")
 #sample("img_rough", "Image carving samples with <i>rough</i> strategy")
 #sample("img_interp", "Low resolution image interpolation test")
+#sample("img_outline", "Outline strategy test (requires potrace)")
+#sample("img_outline2", "Outline strategy demo")
 #sample("parametric", "Parametric surface demonstration")
 #sample("projection", "Path projection onto image surface")
 #sample("import_svg", "SVG import demonstration")

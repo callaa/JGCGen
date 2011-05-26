@@ -3,6 +3,8 @@ package org.luolamies.jgcgen.shapes.surface;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.luolamies.jgcgen.JGCGenerator;
+import org.luolamies.jgcgen.Logger;
 import org.luolamies.jgcgen.path.Path;
 
 /**
@@ -56,7 +58,7 @@ class OutlineStrategy implements ImageStrategy {
 			resolution = 0;
 	}
 	
-	static private final Pattern passpattern = Pattern.compile("(\\d+(?:\\.\\d+)?)(?:\\s*-\\s*(\\d+(?:\\.\\d+)))?");
+	static private final Pattern passpattern = Pattern.compile("(\\d+(?:\\.\\d+)?)(?:\\s*-\\s*(\\d+(?:\\.\\d+)?))?");
 	
 	public Path toPath(Surface img) {
 		double res = resolution;
@@ -71,6 +73,8 @@ class OutlineStrategy implements ImageStrategy {
 		
 		Path path = new Path();
 		
+		final Logger log = JGCGenerator.getLogger();
+		
 		Plane plane = new Plane(img, image.getTool(), image.getWidth(), image.getHeight(), res);
 		
 		final double minz = -img.getMaxZ();
@@ -80,6 +84,7 @@ class OutlineStrategy implements ImageStrategy {
 			z -= mind;
 			if(z<minz)
 				z = minz;
+			log.progress("OutlineStrategy", -z, -minz);
 			if(plane.init(z)) {
 				// Encountered last plane?
 				if(skipped>0)
@@ -88,9 +93,17 @@ class OutlineStrategy implements ImageStrategy {
 					break;
 			} else if(skipped < maxd){
 				// Is the new plane same as the old plane?
+				log.status("Checking equality at Z" + z);
 				if(plane.isIdentical()) {
+					log.status("OutlineStrategy: Skipping identical plane at Z" + z);
 					skipped += mind;
 					continue;
+				} else {
+					if(skipped>0) {
+						// When we encounter a different plane, the previous plane shouldn't be skipped.
+						plane.restorePrevious();
+						z += mind;
+					}
 				}
 			}
 			

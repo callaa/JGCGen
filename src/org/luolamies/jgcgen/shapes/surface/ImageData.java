@@ -140,6 +140,6 @@ final class ImageData extends Surface {
 		    ;
 
 		// Nearest neighbor interpolation (this is only good for testing really)
-		//return zscale * value[((int)Math.round(sy) * width + (int)Math.round(sx));
+		//return zscale * data[((int)Math.round(sy) * width + (int)Math.round(sx))];
 	}
 }

@@ -142,9 +142,18 @@ public class PathExtractor implements PathGenerator {
 		} else if("rect".equals(type)) {
 			// A rectangle
 			Rect.toPath(path, el, matrix);
+		} else if("metadata".equals(type)) {
+			// Ignore
 		} else {
-			System.err.println("Warning: Unhandled SVG element " + el.getNodeName());
+			System.err.println("Warning: Unhandled SVG element " + svgpath(el));
 		}		
+	}
+	
+	private static String svgpath(Node node) {
+		if(node.getParentNode()!=null)
+			return svgpath(node.getParentNode()) + '/' + node.getNodeName();
+		else
+			return node.getNodeName();
 	}
 
 }
