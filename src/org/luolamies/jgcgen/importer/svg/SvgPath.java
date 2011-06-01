@@ -343,10 +343,10 @@ class SvgPath {
 	}
 	
 	/**
-	 * Increment position until a character that is not part of a number [0-9.-] is encountered
+	 * Increment position until a character that is not part of a number [0-9.-e] is encountered
 	 */
 	private void skip_num() {
-		while(pos < data.length() && (Character.isDigit(data.charAt(pos)) || data.charAt(pos)=='-' || data.charAt(pos)=='.')) ++pos;
+		while(pos < data.length() && (Character.isDigit(data.charAt(pos)) || data.charAt(pos)=='-' || data.charAt(pos)=='.' || data.charAt(pos)=='e')) ++pos;
 	}
 	
 	/**

@@ -2,8 +2,6 @@ package org.luolamies.jgcgen.importer.svg;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 
@@ -31,7 +29,7 @@ public class SvgImporter extends Importer {
 	Transform rootmatrix;
 	
 	public SvgImporter(String file) throws SAXException, IOException {
-		this(new InputSource(new FileInputStream(file)));
+		this(new InputSource(new FileInputStream(Files.get(file))));
 	}
 	
 	public SvgImporter(InputSource input) throws SAXException, IOException {
