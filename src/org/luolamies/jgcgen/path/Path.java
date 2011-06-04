@@ -97,10 +97,15 @@ public class Path implements PathGenerator {
 		public final SType getType() { return type; }
 		
 		/**
-		 * Get the segment point. This can be null when type is SEAM
-		 * @return point or null if segment has no point
+		 * Get the segment point
+		 * @return point
+		 * @throws NullPointerException if segment has no point
 		 */
-		public final Coordinate getPoint() { return point; }
+		public final Coordinate getPoint() {
+			if(point==null)
+				throw new NullPointerException(type + " segment has no point!");
+			return point;
+		}
 	}
 	
 	private List<Segment> segments;
@@ -214,15 +219,26 @@ public class Path implements PathGenerator {
 		for(Segment s : segments) {
 			if(s.type==SType.MOVE) {
 				if(!sp.isEmpty()) {
-					subpaths.add(sp);
+					if(sp.segments.get(0).getType() == SType.SEAM) {
+						// No use starting a path with a seam
+						sp.segments.remove(0);
+					}
+					if(!sp.isEmpty())
+						subpaths.add(sp);
 					sp = new Path();
 				}
 			}
 			
 			sp.segments.add(s);
 		}
-		if(!sp.isEmpty())
-			subpaths.add(sp);
+		if(!sp.isEmpty()) {
+			if(sp.segments.get(0).getType() == SType.SEAM) {
+				// No use starting a path with a seam
+				sp.segments.remove(0);
+			}
+			if(!sp.isEmpty())
+				subpaths.add(sp);
+		}
 		return subpaths;
 	}
 	

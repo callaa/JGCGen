@@ -6,9 +6,9 @@ $default_f = 600
 $plunge_f = 100
 
 (Demonstrate outline toolpaths)
-#set($img = $Shapes.surface.image.size(50,50).height(8).tool("3 flat").stepover("50%"))
+#set($img = $Shapes.surface.image.size(50,40).height(8).stepover("50%"))
 
-#g($img.file("suzanne.png").origin("x0y0").strategy("rough"))
-#g($img.file("suzanne.png").origin("x0y0").strategy("outline 0.5-3"))
+#g($img.file("suzanne.png").tool("3 ball").strategy("rough"))
+#g($img.file("suzanne.png").strategy("outline 0.5-3"))
 
 m2
