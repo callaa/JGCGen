@@ -102,7 +102,7 @@ public class Transform {
 	/**
 	 * Apply the transformation to a point
 	 * @param src
-	 * @return
+	 * @return scaled coordinate
 	 */
 	public NumericCoordinate apply(double x, double y) {
 		return new NumericCoordinate(
@@ -110,6 +110,15 @@ public class Transform {
 				b*x + d*y + f,
 				null
 				);
+	}
+	
+	/**
+	 * Scale a scalar value using the matrix.
+	 * @param value
+	 * @return
+	 */
+	public double applyScale(double value) {
+		return a * value;
 	}
 	
 	@Override

@@ -1,0 +1,23 @@
+#boilerplate
+#set($rapidnear = true)
+
+$safe_z = 10
+$default_f = 600
+$plunge_f = 100
+$passdepth = 2
+
+(Test SVG stroke width -> Z mapping)
+
+## Using stroke-width attribute
+#set($svg = $Import.file("stroketest2.svg"))
+
+(Map stroke width to cut depth for 3 mm ball mill)
+#g($svg.path.id("layer1").zmap("strokewidth 3 ball"))
+
+## Using stroke-width style
+#set($svg = $Import.file("stroketest.svg"))
+
+(Map stroke width directly to cut depth)
+#g($svg.path.id("layer1").zmap("strokewidth").toPath().offset("x50"))
+
+m2

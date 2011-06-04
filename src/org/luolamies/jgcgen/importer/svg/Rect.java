@@ -8,7 +8,7 @@ import org.w3c.dom.Element;
  *
  */
 class Rect {
-	static public void toPath(Path path, Element rect, Transform matrix) {
+	static public void toPath(Path path, Element rect, Transform matrix, ZMap zmap) {
 		double width = Double.parseDouble(rect.getAttribute("width"));
 		double height = Double.parseDouble(rect.getAttribute("height"));
 		

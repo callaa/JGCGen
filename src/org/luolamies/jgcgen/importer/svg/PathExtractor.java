@@ -1,7 +1,10 @@
 package org.luolamies.jgcgen.importer.svg;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.management.RuntimeErrorException;
 
 import org.luolamies.jgcgen.RenderException;
 import org.luolamies.jgcgen.path.Path;
@@ -14,6 +17,7 @@ public class PathExtractor implements PathGenerator {
 	private final SvgImporter svg;
 	private List<Extr> extract; 
 	private boolean extractAll;
+	private ZMap zmap = ZMnull.INSTANCE;
 	
 	private static class Extr {
 		Extr(boolean include, String id) {
@@ -35,6 +39,44 @@ public class PathExtractor implements PathGenerator {
 	 */
 	public PathExtractor all() {
 		extractAll = true;
+		return this;
+	}
+	
+	public PathExtractor zmap(String mapping) {
+		String mapper, params;
+		mapping = mapping.trim();
+		int space = mapping.indexOf(' ');
+		if(space<0) {
+			mapper = mapping;
+			params = "";
+		} else {
+			mapper = mapping.substring(0, space);
+			params = mapping.substring(space+1);
+		}
+		
+		try {
+			if(mapper.length()==0) {
+				this.zmap = ZMnull.INSTANCE;
+			} else {
+				Class<? extends ZMap> zmap = (Class<? extends ZMap>) Class.forName(getClass().getPackage().getName() + ".ZM" + mapper);
+				if(params.length()==0)
+					this.zmap = zmap.newInstance();
+				else
+					this.zmap = zmap.getConstructor(String.class).newInstance(params);
+			}
+		} catch (ClassNotFoundException e) {
+			throw new IllegalArgumentException("Z mapping type \"" + mapper + "\" not found!");
+		} catch (InstantiationException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		} catch (SecurityException e) {
+			throw new RuntimeException(e);
+		} catch (InvocationTargetException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchMethodException e) {
+			throw new IllegalArgumentException("Z mapping type \"" + mapper + "\" does not take any parameters!");
+		}
 		return this;
 	}
 	
@@ -138,10 +180,10 @@ public class PathExtractor implements PathGenerator {
 			// Group. Just include all subnodes unless explicitly excluded
 		} else if("path".equals(type)) {
 			// Path
-			SvgPath.toPath(path, el, matrix);
+			SvgPath.toPath(path, el, matrix, zmap);
 		} else if("rect".equals(type)) {
 			// A rectangle
-			Rect.toPath(path, el, matrix);
+			Rect.toPath(path, el, matrix, zmap);
 		} else if("metadata".equals(type)) {
 			// Ignore
 		} else {

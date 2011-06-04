@@ -11,9 +11,15 @@ import org.w3c.dom.Element;
  *
  */
 class SvgPath {
-	static public void toPath(Path path, Element el, Transform matrix) {
-		new SvgPath(el.getAttribute("d"), path, matrix).parse();
+	static public void toPath(Path path, Element el, Transform matrix, ZMap zmap) {
+		new SvgPath(new Style(el), el.getAttribute("d"), path, matrix, zmap).parse();
 	}
+	
+	/** Depth mapper */
+	private final ZMap zmap;
+	
+	/** Element style */
+	private final Style style;
 	
 	/** (Sub)path starting coordinates */
 	private Double startx, starty;
@@ -31,10 +37,12 @@ class SvgPath {
 	private final Transform matrix;
 	private final Path path;
 	
-	private SvgPath(String data, Path path, Transform matrix) {
+	private SvgPath(Style style, String data, Path path, Transform matrix, ZMap zmap) {
 		this.data = data;
 		this.path = path;
 		this.matrix = matrix;
+		this.zmap = zmap;
+		this.style = style;
 	}
 	
 	private void parse() {
@@ -67,7 +75,7 @@ class SvgPath {
 				if(Math.abs(posx-startx) + Math.abs(posy-starty) > 0.00001) {
 					posx = startx;
 					posy = starty;
-					path.addSegment(Path.SType.LINE, matrix.apply(posx, posy));
+					path.addSegment(Path.SType.LINE, zmap.mapZ(matrix.apply(posx, posy), style, matrix));
 				}
 			} else {
 				throw new IllegalArgumentException("Unsupported command: '" + d + "' at index " + (pos-1));
@@ -86,7 +94,7 @@ class SvgPath {
 		posy = move.y;
 		oldctrl = null;
 		
-		path.addSegment(Path.SType.MOVE, matrix.apply(posx, posy));
+		path.addSegment(Path.SType.MOVE, zmap.mapZ(matrix.apply(posx, posy), style, matrix));
 		
 		startx = posx;
 		starty = posy;
